@@ -16,6 +16,10 @@ Room::Room(std::string roomId, Player* host) {
 }
 
 
+void Room::startGame() {
+    this->game = new Game(settings, players);
+}
+
 void Room::addPlayer(Player* player) {
     this->players.push_back(player);
 }

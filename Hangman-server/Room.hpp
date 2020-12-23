@@ -28,8 +28,13 @@ public:
     void setPlayerHealth(int value);
     void setMaxPlayers(int value);
     
+    Game* game;
+    
     void startGame();
     void updateGame(); // wyslij kazdemu graczowi aktualizacje?
+    
+    
+    
     
     // DEBUG
     void printPlayers();
@@ -40,7 +45,6 @@ private:
     std::string id;
     roomStatus status = lobby;
     gameSettings settings;
-    Game* game;
 };
 
 #endif /* Room_hpp */

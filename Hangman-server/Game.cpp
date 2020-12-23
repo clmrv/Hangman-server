@@ -7,6 +7,7 @@
 
 #include "Game.hpp"
 
-Game::Game(gameSettings settings) {
+Game::Game(gameSettings settings, std::vector<Player*> players) {
     this->settings = settings;
+    this->players = players;
 }

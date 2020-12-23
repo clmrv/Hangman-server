@@ -8,6 +8,10 @@
 #ifndef Game_hpp
 #define Game_hpp
 
+#include <vector>
+
+class Player;
+
 enum language {Polski, English};
 
 struct gameSettings
@@ -21,11 +25,11 @@ struct gameSettings
 
 class Game {
 public:
-    Game(gameSettings settings);
-    void start();
+    Game(gameSettings settings, std::vector<Player*> players);
     
 private:
     gameSettings settings;
+    std::vector<Player*> players;
 };
 
 #endif /* Game_hpp */

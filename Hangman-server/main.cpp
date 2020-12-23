@@ -28,6 +28,7 @@ int main(int argc, const char * argv[]) {
     std::cout << "id: " << server.rooms[roomIndex]->getId() << std::endl;
     server.rooms[roomIndex]->printPlayers();
     
+    server.rooms[roomIndex]->startGame();
 
     
     return 0;
