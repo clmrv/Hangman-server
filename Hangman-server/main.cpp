@@ -6,9 +6,29 @@
 //
 
 #include <iostream>
+#include "Server.hpp"
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
+    
+    Server server;
+    
+    Player* player = new Player((int)server.players.size()); // id = index
+    player->setName();
+    server.players.push_back(player);
+    
+    int roomIndex = server.createRoom(server.players[0]);
+    
+    player = new Player((int)server.players.size());
+    player->setName("xd");
+    server.players.push_back(player);
+    
+    server.rooms[roomIndex]->addPlayer(player);
+    
+    std::cout << "index: " << roomIndex << std::endl;
+    std::cout << "id: " << server.rooms[roomIndex]->getId() << std::endl;
+    server.rooms[roomIndex]->printPlayers();
+    
+
+    
     return 0;
 }

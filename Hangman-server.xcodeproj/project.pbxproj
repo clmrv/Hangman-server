@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		CA0C7B2F2592748D00BF532F /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA0C7B2E2592748D00BF532F /* main.cpp */; };
+		CA0C7B39259284A700BF532F /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA0C7B38259284A700BF532F /* Player.cpp */; };
+		CA0C7B3D259285CD00BF532F /* Room.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA0C7B3B259285CD00BF532F /* Room.cpp */; };
+		CA0C7B412592880B00BF532F /* Server.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA0C7B3F2592880B00BF532F /* Server.cpp */; };
+		CA0C7B4525928FB300BF532F /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA0C7B4325928FB300BF532F /* Game.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +29,14 @@
 /* Begin PBXFileReference section */
 		CA0C7B2B2592748D00BF532F /* Hangman-server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Hangman-server"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA0C7B2E2592748D00BF532F /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		CA0C7B37259276EC00BF532F /* Player.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Player.hpp; sourceTree = "<group>"; };
+		CA0C7B38259284A700BF532F /* Player.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Player.cpp; sourceTree = "<group>"; };
+		CA0C7B3B259285CD00BF532F /* Room.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Room.cpp; sourceTree = "<group>"; };
+		CA0C7B3C259285CD00BF532F /* Room.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Room.hpp; sourceTree = "<group>"; };
+		CA0C7B3F2592880B00BF532F /* Server.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Server.cpp; sourceTree = "<group>"; };
+		CA0C7B402592880B00BF532F /* Server.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Server.hpp; sourceTree = "<group>"; };
+		CA0C7B4325928FB300BF532F /* Game.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Game.cpp; sourceTree = "<group>"; };
+		CA0C7B4425928FB300BF532F /* Game.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Game.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +70,14 @@
 			isa = PBXGroup;
 			children = (
 				CA0C7B2E2592748D00BF532F /* main.cpp */,
+				CA0C7B37259276EC00BF532F /* Player.hpp */,
+				CA0C7B38259284A700BF532F /* Player.cpp */,
+				CA0C7B3B259285CD00BF532F /* Room.cpp */,
+				CA0C7B3C259285CD00BF532F /* Room.hpp */,
+				CA0C7B4325928FB300BF532F /* Game.cpp */,
+				CA0C7B4425928FB300BF532F /* Game.hpp */,
+				CA0C7B3F2592880B00BF532F /* Server.cpp */,
+				CA0C7B402592880B00BF532F /* Server.hpp */,
 			);
 			path = "Hangman-server";
 			sourceTree = "<group>";
@@ -118,7 +138,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CA0C7B3D259285CD00BF532F /* Room.cpp in Sources */,
+				CA0C7B39259284A700BF532F /* Player.cpp in Sources */,
+				CA0C7B412592880B00BF532F /* Server.cpp in Sources */,
 				CA0C7B2F2592748D00BF532F /* main.cpp in Sources */,
+				CA0C7B4525928FB300BF532F /* Game.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
