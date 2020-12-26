@@ -10,12 +10,15 @@
 
 #include "Room.hpp"
 #include "Player.hpp"
+#include <unistd.h>
+#include <poll.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 class Server {
 public:
-    std::vector<Room*> rooms;
-    std::vector<Player*> players;
     
+    Server(int port);
     /// returns index of room
     int createRoom(Player* host);
     
@@ -23,7 +26,17 @@ public:
     
     
 private:
+    std::vector<Player*> players;
+    std::vector<Room*> rooms;
+    
+    pollfd events[500];
+    int currFreeEventIndex = 0;
+    
+    int newConnectionSocket;
+    
+    void eventLoop();
     std::string generateRoomId();
+    void connectPlayer();
 };
 
 #endif /* Server_hpp */

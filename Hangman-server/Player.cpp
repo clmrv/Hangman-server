@@ -7,8 +7,9 @@
 
 #include "Player.hpp"
 
-Player::Player( int id /* ... */ ) {
-    this->id = id;
+Player::Player( int fd, int readEvent) {
+    this->fd = fd;
+    this->readEvent = readEvent;
 }
 
 
@@ -21,7 +22,7 @@ void Player::setName(std::string name) {
 
 std::string Player::generateName() {
     std::string name;
-    name = "User" + std::to_string(id);
+    name = "User" + std::to_string(fd);
     return name;
 }
 

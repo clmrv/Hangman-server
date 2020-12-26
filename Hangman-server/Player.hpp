@@ -17,7 +17,10 @@ class Room;
 
 class Player {
 public:
-    Player(int id /*pewnie jakies sieciowe info*/);
+    Player(int fd, int readEvent);
+    
+    int fd;
+    int readEvent;
     
     void setName(std::string name = "");
     bool isHost();
@@ -29,7 +32,6 @@ public:
     
     
 private:
-    int id;
     std::string name;
     int health;
     bool host = false;
