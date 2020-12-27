@@ -10,17 +10,20 @@
 #define Player_hpp
 
 #include <string>
+#include "Connection.hpp"
 
-/* możliwe, że można jakoś lepiej headery zrobić, żeby tego nie było trzeba*/
 class Room;
-/* ---------------------------------------------------------------------- */
+class Connection;
 
 class Player {
 public:
-    Player(int fd, int readEvent);
-    
-    int fd;
-    int readEvent;
+    Player();
+
+    // Identifier used to connect back to the Player
+    uint16_t restorationId;
+
+    // Connection used by this Player
+    Connection* conn;
     
     void setName(std::string name = "");
     bool isHost();
@@ -32,6 +35,7 @@ public:
     
     
 private:
+
     std::string name;
     int health;
     bool host = false;

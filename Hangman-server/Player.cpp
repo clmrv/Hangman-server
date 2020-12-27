@@ -7,9 +7,8 @@
 
 #include "Player.hpp"
 
-Player::Player( int fd, int readEvent) {
-    this->fd = fd;
-    this->readEvent = readEvent;
+Player::Player() {
+    restorationId = 1;
 }
 
 
@@ -22,7 +21,8 @@ void Player::setName(std::string name) {
 
 std::string Player::generateName() {
     std::string name;
-    name = "User" + std::to_string(fd);
+    // TODO: Create random name
+    name = "User000";
     return name;
 }
 

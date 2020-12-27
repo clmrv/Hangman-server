@@ -30,51 +30,98 @@ Server::Server(int port) {
 }
 
 void Server::eventLoop() {
-    events[0].events = POLLIN;
-    events[0].fd = newConnectionSocket;
-    currFreeEventIndex++;
+    events.push_back({ newConnectionSocket, POLLIN });
 
     while (true) {
-        if (poll(events, currFreeEventIndex, -1) > 0) {
-            
-            // ACCEPT NEW CONNECTION
-            if (events[0].revents & POLLIN) {
-                connectPlayer();
-            }
-            
-            
-            // READ FROM PLAYERS
-            for( std::vector<Player*>::iterator it = players.begin(); it != players.end(); it++) {
-                if (events[(*it)->readEvent].revents & POLLIN) {
-                    char buffer[256];
-                    int bytes = read((*it)->fd, buffer, 256);
-                    if (bytes > 0)
-                        write(1, buffer, bytes);
+
+        if(poll(events.data(), (unsigned int)events.size(), -1) > 0) {
+            for(auto const &event : events) {
+
+                if(event.fd == newConnectionSocket) {
+
+                    // Accept new connection
+                    if(event.revents & POLLIN) {
+                        connect();
+                    }
+
+                } else {
+
+                    // Read from connection
+                    if(event.revents & POLLIN) {
+                        connections[event.fd].read();
+                    }
+
+                    // Disconnect
+                    if(event.revents & POLLHUP) {
+                        disconnect(event.fd);
+                    }
+
                 }
+
+                // Login players
+                // (should be done on separate thread?)
+                for(auto& [fd, conn] : connections) {
+
+                    // If the first message is of type 'LOGIN'
+                    if(!conn.incoming.empty() > 0 && conn.incoming[0].type == 'X') {
+
+                        // Message contains restoration ID
+                        if(conn.incoming[0].length == 4) {
+                            uint16_t restorationID;
+                            memcpy(&restorationID, conn.incoming[0].data, sizeof(uint16_t));
+                            restorationID = ntohs(restorationID);
+                            loginPlayer(conn, restorationID);
+                        }
+                        // Message without restoration ID
+                        else {
+                            loginPlayer(conn);
+                        }
+                    }
+                }
+
+
             }
-            
         }
+
     }
 }
 
-void Server::connectPlayer() {
-    sockaddr_in newUserSocket;
-    socklen_t newUserSocketSize;
+void Server::connect() {
+    sockaddr_in socket;
+    socklen_t socketSize;
     
-    int newUserFD = accept(newConnectionSocket, (sockaddr*)&newUserSocket, &newUserSocketSize);
-    this->players.push_back(new Player(newUserFD, currFreeEventIndex));
-    events[currFreeEventIndex].fd = newUserFD;
-    events[currFreeEventIndex].events = POLLIN;
-    
-    printf("Connected: %s, fd: %d, read_event: %d\n", inet_ntoa(newUserSocket.sin_addr), newUserFD, currFreeEventIndex);
-    
-    currFreeEventIndex++;
+    int fd = accept(newConnectionSocket, (sockaddr*)&socket, &socketSize);
+
+    // Create new Connection
+    connections.emplace(fd, fd);
+
+    // Create new event
+    events.push_back({ fd, POLLIN | POLLHUP });
+
+    printf("Connected: %s, fd: %d, read_event: %lu\n",
+           inet_ntoa(socket.sin_addr), fd, connections.size());
+
+}
+
+void Server::disconnect(int fd) {
+
+    // Remove reference to Connection from Player
+    if(connections[fd].player != nullptr) {
+        connections[fd].player->conn = nullptr;
+    }
+
+    // Remove connection
+    connections.erase(fd);
+
+    // Remove event
+    events.erase(std::remove_if(events.begin(), events.end(), [fd] (const pollfd& p) { return p.fd == fd; } ), events.end());
+
+    printf("Disconnected: fd: %d\n", fd);
 }
 
 
 int Server::createRoom(Player* host) {
-    Room* room = new Room(generateRoomId(), host);
-    this->rooms.push_back(room);
+    auto it = rooms.emplace_back(generateRoomId(), host);
     return (int)rooms.size()-1;
 }
 
@@ -87,6 +134,31 @@ std::string Server::generateRoomId() {
     // albo losujemy 4 litery, potem sprawdzamy, czy się w jakimś pokoju powtarza, jak tak to losujemy ponownie
     
     return "test";
+}
+
+void Server::loginPlayer(Connection& conn, std::optional<uint16_t> restorationID) {
+
+    // Login existing Player
+    if(auto id = restorationID) {
+
+        // Find a player with the same restoration ID (and no connection)
+        auto it = std::find_if(players.begin(), players.end(), [id] (const Player& p) {
+            return p.restorationId == id && p.conn == nullptr;
+        });
+
+        // Restoration ID found, assign Player to Connection and Connection to Player
+        if(it != players.end()) {
+            conn.player = &(*it);
+            it->conn = &conn;
+            return;
+        }
+    }
+
+    // No restoration ID
+    // Create new Player and login
+    auto it = players.emplace_back();
+    conn.player = &it;
+    it.conn = &conn;
 }
 
 

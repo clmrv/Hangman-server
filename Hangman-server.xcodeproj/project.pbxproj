@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0130FB202598F78D002D9EB8 /* Message.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0130FB1F2598F78D002D9EB8 /* Message.cpp */; };
+		0130FB242598F8E6002D9EB8 /* Connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0130FB232598F8E6002D9EB8 /* Connection.cpp */; };
 		CA0C7B2F2592748D00BF532F /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA0C7B2E2592748D00BF532F /* main.cpp */; };
 		CA0C7B39259284A700BF532F /* Player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA0C7B38259284A700BF532F /* Player.cpp */; };
 		CA0C7B3D259285CD00BF532F /* Room.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA0C7B3B259285CD00BF532F /* Room.cpp */; };
@@ -27,6 +29,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0130FB002598A972002D9EB8 /* Connection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Connection.hpp; sourceTree = "<group>"; };
+		0130FB062598C0D4002D9EB8 /* Message.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Message.hpp; sourceTree = "<group>"; };
+		0130FB1F2598F78D002D9EB8 /* Message.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Message.cpp; sourceTree = "<group>"; };
+		0130FB232598F8E6002D9EB8 /* Connection.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Connection.cpp; sourceTree = "<group>"; };
 		CA0C7B2B2592748D00BF532F /* Hangman-server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Hangman-server"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA0C7B2E2592748D00BF532F /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		CA0C7B37259276EC00BF532F /* Player.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Player.hpp; sourceTree = "<group>"; };
@@ -50,6 +56,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0130FB042598C0AA002D9EB8 /* Connection */ = {
+			isa = PBXGroup;
+			children = (
+				0130FB232598F8E6002D9EB8 /* Connection.cpp */,
+				0130FB002598A972002D9EB8 /* Connection.hpp */,
+				0130FB1F2598F78D002D9EB8 /* Message.cpp */,
+				0130FB062598C0D4002D9EB8 /* Message.hpp */,
+			);
+			path = Connection;
+			sourceTree = "<group>";
+		};
 		CA0C7B222592748D00BF532F = {
 			isa = PBXGroup;
 			children = (
@@ -78,6 +95,7 @@
 				CA0C7B4425928FB300BF532F /* Game.hpp */,
 				CA0C7B3F2592880B00BF532F /* Server.cpp */,
 				CA0C7B402592880B00BF532F /* Server.hpp */,
+				0130FB042598C0AA002D9EB8 /* Connection */,
 			);
 			path = "Hangman-server";
 			sourceTree = "<group>";
@@ -142,7 +160,9 @@
 				CA0C7B39259284A700BF532F /* Player.cpp in Sources */,
 				CA0C7B412592880B00BF532F /* Server.cpp in Sources */,
 				CA0C7B2F2592748D00BF532F /* main.cpp in Sources */,
+				0130FB242598F8E6002D9EB8 /* Connection.cpp in Sources */,
 				CA0C7B4525928FB300BF532F /* Game.cpp in Sources */,
+				0130FB202598F78D002D9EB8 /* Message.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,6 +283,7 @@
 		CA0C7B332592748D00BF532F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -271,6 +292,7 @@
 		CA0C7B342592748D00BF532F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CODE_SIGN_STYLE = Automatic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

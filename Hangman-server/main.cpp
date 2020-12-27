@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include "Server.hpp"
+#include "Connection.hpp"
 
 
 int main(int argc, const char * argv[]) {
@@ -26,13 +27,13 @@ int main(int argc, const char * argv[]) {
     server.rooms[roomIndex]->addPlayer(player);
     
     std::cout << "index: " << roomIndex << std::endl;
-    std::cout << "id: " << server.rooms[roomIndex]->getId() << std::endl;
-    server.rooms[roomIndex]->printPlayers();
+    std::cout << "id: " << server.rooms[roomIndex].getId() << std::endl;
+    server.rooms[roomIndex].printPlayers();
     
-    server.rooms[roomIndex]->startGame();
+    server.rooms[roomIndex].startGame();
     */
-    
-    Server* server = new Server(1234);
+
+    Server server(1234);
 
     return 0;
 }
