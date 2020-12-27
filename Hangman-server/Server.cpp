@@ -51,6 +51,11 @@ void Server::eventLoop() {
                         connections[event.fd].read();
                     }
 
+                    // Write to connection
+                    if(event.revents & POLLOUT) {
+                        connections[event.fd].write();
+                    }
+
                     // Disconnect
                     if(event.revents & POLLHUP) {
                         disconnect(event.fd);
@@ -63,12 +68,15 @@ void Server::eventLoop() {
                 for(auto& [fd, conn] : connections) {
 
                     // If the first message is of type 'LOGIN'
-                    if(!conn.incoming.empty() > 0 && conn.incoming[0].type == 'X') {
+                    if(!conn.incoming.empty() > 0 &&
+                       conn.incoming.front().type == MessageType::login) {
+
+                        auto msg = conn.incoming.begin();
 
                         // Message contains restoration ID
-                        if(conn.incoming[0].length == 4) {
+                        if(msg->length == 4) {
                             uint16_t restorationID;
-                            memcpy(&restorationID, conn.incoming[0].data, sizeof(uint16_t));
+                            memcpy(&restorationID, msg->data, sizeof(uint16_t));
                             restorationID = ntohs(restorationID);
                             loginPlayer(conn, restorationID);
                         }
@@ -76,6 +84,8 @@ void Server::eventLoop() {
                         else {
                             loginPlayer(conn);
                         }
+
+                        conn.incoming.pop_front();
                     }
                 }
 
@@ -96,7 +106,7 @@ void Server::connect() {
     connections.emplace(fd, fd);
 
     // Create new event
-    events.push_back({ fd, POLLIN | POLLHUP });
+    events.push_back({ fd, POLLIN | POLLOUT | POLLHUP });
 
     printf("Connected: %s, fd: %d, read_event: %lu\n",
            inet_ntoa(socket.sin_addr), fd, connections.size());
@@ -127,13 +137,16 @@ int Server::createRoom(Player* host) {
 
 std::string Server::generateRoomId() {
     std::string id;
+
+    // Letters between '0' and '9'
+    std::uniform_int_distribution<> dist('0', '9');
+
+    // Create unique id
+    do {
+        id = dist(generator) + dist(generator) + dist(generator) + dist(generator);
+    } while (std::find_if(rooms.begin(), rooms.end(), [id](Room& r) { return r.getId() == id; }) != rooms.end());
     
-    // TODO
-    // nr pokoju + 4 litery?
-    
-    // albo losujemy 4 litery, potem sprawdzamy, czy się w jakimś pokoju powtarza, jak tak to losujemy ponownie
-    
-    return "test";
+    return id;
 }
 
 void Server::loginPlayer(Connection& conn, std::optional<uint16_t> restorationID) {
@@ -150,15 +163,29 @@ void Server::loginPlayer(Connection& conn, std::optional<uint16_t> restorationID
         if(it != players.end()) {
             conn.player = &(*it);
             it->conn = &conn;
+
+            // Send 'Logged in' message (containing restoration ID)
+            conn.outgoing.emplace_back(MessageType::loggedIn, (const uint8_t*)&id, (size_t)sizeof(id));
             return;
         }
     }
 
-    // No restoration ID
+    // Generate unique restoration ID
+    uint32_t rID;
+    std::uniform_int_distribution<uint32_t> dist{};
+    do {
+        rID = dist(generator);
+    } while(std::find_if(players.begin(), players.end(), [rID](const Player& p) {
+        return p.restorationId == rID;
+    } ) != players.end());
+
     // Create new Player and login
-    auto it = players.emplace_back();
+    auto it = players.emplace_back(rID);
     conn.player = &it;
     it.conn = &conn;
+
+    // Send 'Logged in' message (containing restoration ID)
+    conn.outgoing.emplace_back(MessageType::loggedIn, (const uint8_t*)&rID, (size_t)sizeof(rID));
 }
 
 

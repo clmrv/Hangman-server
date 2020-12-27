@@ -12,7 +12,7 @@
 
 
 InMessage::InMessage() {
-    buf = new uint8_t[5];
+    buf = new uint8_t[3];
 }
 
 InMessage::InMessage(InMessage&& other) {
@@ -23,7 +23,7 @@ InMessage::InMessage(InMessage&& other) {
     buf = other.buf;
     bufRead = other.bufRead;
 
-    other.type = 0;
+    other.type = MessageType::unknown;
     other.length = 0;
     other.data = nullptr;
     other.error = false;
@@ -40,24 +40,22 @@ bool InMessage::read(int fd) {
     ssize_t n;
 
     // Read header parts
-    if(bufRead < 5) {
-        n = ::read(fd, buf + bufRead, 5 - bufRead);
+    if(bufRead < 3) {
+        n = ::read(fd, buf + bufRead, 3 - bufRead);
 
         // Did read something
         if(n >= 0) {
             bufRead += n;
 
             // Got complete header
-            if(bufRead == 5) {
+            if(bufRead == 3) {
 
                 // Type
-                type = buf[0];
+                type = static_cast<MessageType>(buf[0]);
 
                 // Length
                 memcpy(&length, &buf[1], sizeof(length));
                 length = ntohs(length);
-                // TODO: Delete this line \/
-                length = 5;
 
                 // Data
                 if(length > 0) {
@@ -76,8 +74,8 @@ bool InMessage::read(int fd) {
     }
 
     // Read data parts
-    else if(bufRead < length + 5) {
-        n = ::read(fd, data + bufRead - 5, length + 5 - bufRead);
+    else if(bufRead < length + 3) {
+        n = ::read(fd, data + bufRead - 3, length + 3 - bufRead);
 
         // Did read something
         if(n >= 0) {
@@ -91,13 +89,82 @@ bool InMessage::read(int fd) {
         }
     }
 
-    return error || (bufRead >= 5 && bufRead == length + 5 );
+    return error || (bufRead >= 3 && bufRead == length + 3 );
 }
 
 bool InMessage::completed() {
-    return error || (bufRead >= 5 && bufRead == length + 5 );
+    return error || (bufRead >= 3 && bufRead == length + 3 );
 }
 
 
 // MARK: - OutMessage
 
+/// Create a message from a text string
+OutMessage::OutMessage(MessageType type, const char* string) {
+    count = strlen(string) + 1 + 3;
+    bytes = new uint8_t[count];
+    bytes[0] = static_cast<uint8_t>(type);
+    uint16_t len = htons((uint16_t)count - 3);
+    memcpy(this->bytes + 1, &len, sizeof(len));
+    memcpy(bytes + 3, string, count);
+}
+
+/// Create a message from bytes
+OutMessage::OutMessage(MessageType type, const uint8_t* bytes, size_t count) {
+    this->count = count + 3;
+    this->bytes = new uint8_t[count];
+    this->bytes[0] = static_cast<uint8_t>(type);
+    uint16_t len = htons((uint16_t)count);
+    memcpy(this->bytes + 1, &len, sizeof(len));
+    memcpy(this->bytes + 3, bytes, count);
+}
+
+/// Move constructor
+OutMessage::OutMessage(OutMessage&& o) {
+    bytes = o.bytes;
+    count = o.count;
+    written = o.written;
+    error = o.error;
+    o.bytes = nullptr;
+    o.count = 0;
+    o.written = 0;
+    o.error = false;
+}
+
+// Copy constructor
+OutMessage::OutMessage(const OutMessage& o) {
+    count = o.count;
+    written = o.written;
+    error = o.error;
+    bytes = new uint8_t[count];
+    memcpy(bytes, o.bytes, count);
+}
+
+OutMessage::~OutMessage() {
+    delete [] bytes;
+}
+
+/// Write data to a descriptor
+/// @return Whether writing has been completed
+bool OutMessage::write(int fd) {
+    ssize_t n = ::write(fd, bytes + written, count - written);
+    if(n >= 0) {
+        written += static_cast<size_t>(n);
+    } else {
+        error = true;
+        return true;
+    }
+
+    return written == count;
+}
+
+/// Check whether writing has been completed
+bool OutMessage::completed() {
+    return error || count == written;
+}
+
+/// Reset writing progress and error
+void OutMessage::reset() {
+    written = 0;
+    error = false;
+}

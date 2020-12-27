@@ -19,6 +19,7 @@
 #include <map>
 #include <optional>
 #include <algorithm>
+#include <random>
 
 class Server {
 public:
@@ -45,6 +46,9 @@ private:
     
     void eventLoop();
     std::string generateRoomId();
+
+    std::random_device rd;
+    std::mt19937_64 generator { rd() };
 
 
     /// Create a new connection

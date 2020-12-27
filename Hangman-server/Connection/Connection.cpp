@@ -25,3 +25,11 @@ void Connection::read() {
     }
 
 }
+
+void Connection::write() {
+    if(!outgoing.empty()) {
+        if(outgoing.front().write(fd)) {
+            outgoing.pop_front();
+        }
+    }
+}

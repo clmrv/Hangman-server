@@ -33,6 +33,7 @@
 		0130FB062598C0D4002D9EB8 /* Message.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Message.hpp; sourceTree = "<group>"; };
 		0130FB1F2598F78D002D9EB8 /* Message.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Message.cpp; sourceTree = "<group>"; };
 		0130FB232598F8E6002D9EB8 /* Connection.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Connection.cpp; sourceTree = "<group>"; };
+		01D8CDC7259932D50001AB3F /* MessageType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageType.h; sourceTree = "<group>"; };
 		CA0C7B2B2592748D00BF532F /* Hangman-server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Hangman-server"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA0C7B2E2592748D00BF532F /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		CA0C7B37259276EC00BF532F /* Player.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Player.hpp; sourceTree = "<group>"; };
@@ -63,6 +64,7 @@
 				0130FB002598A972002D9EB8 /* Connection.hpp */,
 				0130FB1F2598F78D002D9EB8 /* Message.cpp */,
 				0130FB062598C0D4002D9EB8 /* Message.hpp */,
+				01D8CDC7259932D50001AB3F /* MessageType.h */,
 			);
 			path = Connection;
 			sourceTree = "<group>";

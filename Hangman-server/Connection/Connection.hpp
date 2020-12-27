@@ -11,7 +11,7 @@
 #include "Player.hpp"
 #include "Message.hpp"
 
-#include <vector>
+#include <list>
 
 class Player;
 
@@ -22,7 +22,8 @@ private:
 public:
     int fd;
     Player* player;
-    std::vector<InMessage> incoming;
+    std::list<InMessage> incoming;
+    std::list<OutMessage> outgoing;
 
 
     Connection();
@@ -30,6 +31,9 @@ public:
 
     /// Read messages
     void read();
+
+    /// Write messages
+    void write();
 
 };
 

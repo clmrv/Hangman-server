@@ -17,7 +17,7 @@ class Connection;
 
 class Player {
 public:
-    Player();
+    Player(uint32_t restorationId);
 
     // Identifier used to connect back to the Player
     uint16_t restorationId;
