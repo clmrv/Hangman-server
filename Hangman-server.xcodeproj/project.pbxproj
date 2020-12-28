@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		010108B5259A2E26006721AD /* OutMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 010108B4259A2E26006721AD /* OutMessage.cpp */; };
+		010108BF259A311C006721AD /* InMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 010108BD259A311C006721AD /* InMessage.cpp */; };
 		0130FB202598F78D002D9EB8 /* Message.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0130FB1F2598F78D002D9EB8 /* Message.cpp */; };
 		0130FB242598F8E6002D9EB8 /* Connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0130FB232598F8E6002D9EB8 /* Connection.cpp */; };
 		CA0C7B2F2592748D00BF532F /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA0C7B2E2592748D00BF532F /* main.cpp */; };
@@ -29,6 +31,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		010108B4259A2E26006721AD /* OutMessage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OutMessage.cpp; sourceTree = "<group>"; };
+		010108B8259A2E65006721AD /* OutMessage.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OutMessage.hpp; sourceTree = "<group>"; };
+		010108BD259A311C006721AD /* InMessage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = InMessage.cpp; sourceTree = "<group>"; };
+		010108BE259A311C006721AD /* InMessage.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = InMessage.hpp; sourceTree = "<group>"; };
 		0130FB002598A972002D9EB8 /* Connection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Connection.hpp; sourceTree = "<group>"; };
 		0130FB062598C0D4002D9EB8 /* Message.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Message.hpp; sourceTree = "<group>"; };
 		0130FB1F2598F78D002D9EB8 /* Message.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Message.cpp; sourceTree = "<group>"; };
@@ -60,10 +66,14 @@
 		0130FB042598C0AA002D9EB8 /* Connection */ = {
 			isa = PBXGroup;
 			children = (
-				0130FB232598F8E6002D9EB8 /* Connection.cpp */,
 				0130FB002598A972002D9EB8 /* Connection.hpp */,
-				0130FB1F2598F78D002D9EB8 /* Message.cpp */,
+				0130FB232598F8E6002D9EB8 /* Connection.cpp */,
 				0130FB062598C0D4002D9EB8 /* Message.hpp */,
+				0130FB1F2598F78D002D9EB8 /* Message.cpp */,
+				010108B8259A2E65006721AD /* OutMessage.hpp */,
+				010108B4259A2E26006721AD /* OutMessage.cpp */,
+				010108BE259A311C006721AD /* InMessage.hpp */,
+				010108BD259A311C006721AD /* InMessage.cpp */,
 				01D8CDC7259932D50001AB3F /* MessageType.h */,
 			);
 			path = Connection;
@@ -162,6 +172,8 @@
 				CA0C7B39259284A700BF532F /* Player.cpp in Sources */,
 				CA0C7B412592880B00BF532F /* Server.cpp in Sources */,
 				CA0C7B2F2592748D00BF532F /* main.cpp in Sources */,
+				010108BF259A311C006721AD /* InMessage.cpp in Sources */,
+				010108B5259A2E26006721AD /* OutMessage.cpp in Sources */,
 				0130FB242598F8E6002D9EB8 /* Connection.cpp in Sources */,
 				CA0C7B4525928FB300BF532F /* Game.cpp in Sources */,
 				0130FB202598F78D002D9EB8 /* Message.cpp in Sources */,

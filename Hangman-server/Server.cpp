@@ -6,6 +6,7 @@
 //
 
 #include "Server.hpp"
+#include "Message.hpp"
 
 Server::Server(int port) {
     newConnectionSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -71,20 +72,13 @@ void Server::eventLoop() {
                     if(!conn.incoming.empty() > 0 &&
                        conn.incoming.front().type == MessageType::login) {
 
-                        auto msg = conn.incoming.begin();
+                        // Create 'login' message
+                        Message::login msg(*conn.incoming.begin());
 
-                        // Message contains restoration ID
-                        if(msg->length == 2) {
-                            uint16_t restorationID;
-                            memcpy(&restorationID, msg->data, sizeof(restorationID));
-                            restorationID = ntohs(restorationID);
-                            loginPlayer(conn, restorationID);
-                        }
-                        // Message without restoration ID
-                        else {
-                            loginPlayer(conn);
-                        }
+                        // Login player
+                        loginPlayer(conn, msg.restorationID);
 
+                        // Delete first message
                         conn.incoming.pop_front();
                     }
                 }
@@ -165,8 +159,7 @@ void Server::loginPlayer(Connection& conn, std::optional<uint16_t> restorationID
             it->conn = &conn;
 
             // Send 'Logged in' message (containing restoration ID)
-            uint16_t rIDbigEndian = htons(*id);
-            conn.outgoing.emplace_back(MessageType::loggedIn, (const uint8_t*)&rIDbigEndian, (size_t)sizeof(rIDbigEndian));
+            conn.outgoing.push_back(Message::loggedIn(*id));
             return;
         }
     }
@@ -188,8 +181,7 @@ void Server::loginPlayer(Connection& conn, std::optional<uint16_t> restorationID
     it.conn = &conn;
 
     // Send 'Logged in' message (containing restoration ID)
-    uint16_t rIDbigEndian = htons(rID);
-    conn.outgoing.emplace_back(MessageType::loggedIn, (const uint8_t*)&rIDbigEndian, (size_t)sizeof(rIDbigEndian));
+    conn.outgoing.push_back(Message::loggedIn(rID));
 }
 
 

@@ -17,13 +17,13 @@ class Player;
 
 class Connection {
 private:
-    InMessage nextIn;
+    Message::In nextIn;
 
 public:
     int fd;
     Player* player;
-    std::list<InMessage> incoming;
-    std::list<OutMessage> outgoing;
+    std::list<Message::In> incoming;
+    std::list<Message::Out> outgoing;
 
 
     Connection();

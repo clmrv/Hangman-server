@@ -16,11 +16,13 @@
 
 #include "MessageType.h"
 
+namespace Message {
 
-// MARK: - InMessage
+
+// MARK: - Incoming Message
 
 
-class InMessage {
+class In {
 private:
     uint8_t *buf;
     uint32_t bufRead = 0;
@@ -33,12 +35,12 @@ public:
 
     bool error = false;
 
-    InMessage();
+    In();
 
     // Move constructor
-    InMessage(InMessage&& other);
+    In(In&& other);
 
-    ~InMessage();
+    ~In();
 
     /// Read message from a file descriptor
     /// @param fd File descriptor to read data from
@@ -50,9 +52,9 @@ public:
 };
 
 
-// MARK: - OutMessage
+// MARK: - Outgoing Message
 
-class OutMessage {
+class Out {
 private:
     uint8_t* bytes;
     size_t count = 0;
@@ -63,18 +65,18 @@ public:
     bool error = false;
 
     /// Create a message from a text string
-    OutMessage(MessageType type, const char* string);
+    Out(MessageType type, const char* string);
 
     /// Create a message from bytes
-    OutMessage(MessageType type, const uint8_t* bytes, size_t count);
+    Out(MessageType type, const uint8_t* bytes, size_t count);
 
     /// Move constructor
-    OutMessage(OutMessage&& o);
+    Out(Out&& o);
 
     // Copy constructor
-    OutMessage(const OutMessage& o);
+    Out(const Out& o);
 
-    ~OutMessage();
+    ~Out();
 
     /// Write data to a descriptor
     /// @return Whether writing has been completed
@@ -88,5 +90,6 @@ public:
 
 };
 
+}
 
 #endif /* Message_h */

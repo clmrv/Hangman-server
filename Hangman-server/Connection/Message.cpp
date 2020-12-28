@@ -7,15 +7,17 @@
 
 #include "Message.hpp"
 
+using namespace Message;
+
 
 // MARK: - InMessage
 
 
-InMessage::InMessage() {
+In::In() {
     buf = new uint8_t[3];
 }
 
-InMessage::InMessage(InMessage&& other) {
+In::In(In&& other) {
     type = other.type;
     length = other.length;
     data = other.data;
@@ -31,12 +33,12 @@ InMessage::InMessage(InMessage&& other) {
     other.bufRead = 0;
 }
 
-InMessage::~InMessage() {
+In::~In() {
     delete [] buf;
     delete [] data;
 }
 
-bool InMessage::read(int fd) {
+bool In::read(int fd) {
     ssize_t n;
 
     // Read header parts
@@ -92,7 +94,7 @@ bool InMessage::read(int fd) {
     return error || (bufRead >= 3 && bufRead == length + 3 );
 }
 
-bool InMessage::completed() {
+bool In::completed() {
     return error || (bufRead >= 3 && bufRead == length + 3 );
 }
 
@@ -100,7 +102,7 @@ bool InMessage::completed() {
 // MARK: - OutMessage
 
 /// Create a message from a text string
-OutMessage::OutMessage(MessageType type, const char* string) {
+Out::Out(MessageType type, const char* string) {
     count = strlen(string) + 1 + 3;
     bytes = new uint8_t[count];
     bytes[0] = static_cast<uint8_t>(type);
@@ -110,7 +112,7 @@ OutMessage::OutMessage(MessageType type, const char* string) {
 }
 
 /// Create a message from bytes
-OutMessage::OutMessage(MessageType type, const uint8_t* bytes, size_t count) {
+Out::Out(MessageType type, const uint8_t* bytes, size_t count) {
     this->count = count + 3;
     this->bytes = new uint8_t[count];
     this->bytes[0] = static_cast<uint8_t>(type);
@@ -120,7 +122,7 @@ OutMessage::OutMessage(MessageType type, const uint8_t* bytes, size_t count) {
 }
 
 /// Move constructor
-OutMessage::OutMessage(OutMessage&& o) {
+Out::Out(Out&& o) {
     bytes = o.bytes;
     count = o.count;
     written = o.written;
@@ -132,7 +134,7 @@ OutMessage::OutMessage(OutMessage&& o) {
 }
 
 // Copy constructor
-OutMessage::OutMessage(const OutMessage& o) {
+Out::Out(const Out& o) {
     count = o.count;
     written = o.written;
     error = o.error;
@@ -140,13 +142,13 @@ OutMessage::OutMessage(const OutMessage& o) {
     memcpy(bytes, o.bytes, count);
 }
 
-OutMessage::~OutMessage() {
+Out::~Out() {
     delete [] bytes;
 }
 
 /// Write data to a descriptor
 /// @return Whether writing has been completed
-bool OutMessage::write(int fd) {
+bool Out::write(int fd) {
     ssize_t n = ::write(fd, bytes + written, count - written);
     if(n >= 0) {
         written += static_cast<size_t>(n);
@@ -159,12 +161,12 @@ bool OutMessage::write(int fd) {
 }
 
 /// Check whether writing has been completed
-bool OutMessage::completed() {
+bool Out::completed() {
     return error || count == written;
 }
 
 /// Reset writing progress and error
-void OutMessage::reset() {
+void Out::reset() {
     written = 0;
     error = false;
 }
