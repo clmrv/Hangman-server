@@ -165,7 +165,8 @@ void Server::loginPlayer(Connection& conn, std::optional<uint16_t> restorationID
             it->conn = &conn;
 
             // Send 'Logged in' message (containing restoration ID)
-            conn.outgoing.emplace_back(MessageType::loggedIn, (const uint8_t*)&id, (size_t)sizeof(id));
+            uint32_t rIDbigEndian = htonl(*id);
+            conn.outgoing.emplace_back(MessageType::loggedIn, (const uint8_t*)&rIDbigEndian, (size_t)sizeof(rIDbigEndian));
             return;
         }
     }
@@ -179,13 +180,16 @@ void Server::loginPlayer(Connection& conn, std::optional<uint16_t> restorationID
         return p.restorationId == rID;
     } ) != players.end());
 
+    printf("Random restoration id: %u\n", rID);
+
     // Create new Player and login
     auto it = players.emplace_back(rID);
     conn.player = &it;
     it.conn = &conn;
 
     // Send 'Logged in' message (containing restoration ID)
-    conn.outgoing.emplace_back(MessageType::loggedIn, (const uint8_t*)&rID, (size_t)sizeof(rID));
+    uint32_t rIDbigEndian = htonl(rID);
+    conn.outgoing.emplace_back(MessageType::loggedIn, (const uint8_t*)&rIDbigEndian, (size_t)sizeof(rIDbigEndian));
 }
 
 
