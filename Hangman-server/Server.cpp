@@ -74,9 +74,9 @@ void Server::eventLoop() {
                         auto msg = conn.incoming.begin();
 
                         // Message contains restoration ID
-                        if(msg->length == 4) {
+                        if(msg->length == 2) {
                             uint16_t restorationID;
-                            memcpy(&restorationID, msg->data, sizeof(uint16_t));
+                            memcpy(&restorationID, msg->data, sizeof(restorationID));
                             restorationID = ntohs(restorationID);
                             loginPlayer(conn, restorationID);
                         }
@@ -156,7 +156,7 @@ void Server::loginPlayer(Connection& conn, std::optional<uint16_t> restorationID
 
         // Find a player with the same restoration ID (and no connection)
         auto it = std::find_if(players.begin(), players.end(), [id] (const Player& p) {
-            return p.restorationId == id && p.conn == nullptr;
+            return p.restorationId == *id && p.conn == nullptr;
         });
 
         // Restoration ID found, assign Player to Connection and Connection to Player
@@ -165,15 +165,15 @@ void Server::loginPlayer(Connection& conn, std::optional<uint16_t> restorationID
             it->conn = &conn;
 
             // Send 'Logged in' message (containing restoration ID)
-            uint32_t rIDbigEndian = htonl(*id);
+            uint16_t rIDbigEndian = htons(*id);
             conn.outgoing.emplace_back(MessageType::loggedIn, (const uint8_t*)&rIDbigEndian, (size_t)sizeof(rIDbigEndian));
             return;
         }
     }
 
     // Generate unique restoration ID
-    uint32_t rID;
-    std::uniform_int_distribution<uint32_t> dist{};
+    uint16_t rID;
+    std::uniform_int_distribution<uint16_t> dist{};
     do {
         rID = dist(generator);
     } while(std::find_if(players.begin(), players.end(), [rID](const Player& p) {
@@ -188,7 +188,7 @@ void Server::loginPlayer(Connection& conn, std::optional<uint16_t> restorationID
     it.conn = &conn;
 
     // Send 'Logged in' message (containing restoration ID)
-    uint32_t rIDbigEndian = htonl(rID);
+    uint16_t rIDbigEndian = htons(rID);
     conn.outgoing.emplace_back(MessageType::loggedIn, (const uint8_t*)&rIDbigEndian, (size_t)sizeof(rIDbigEndian));
 }
 

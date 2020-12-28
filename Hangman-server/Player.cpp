@@ -7,7 +7,7 @@
 
 #include "Player.hpp"
 
-Player::Player(uint32_t restorationId) {
+Player::Player(uint16_t restorationId) {
     this->restorationId = restorationId;
 }
 
