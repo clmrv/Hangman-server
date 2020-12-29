@@ -7,8 +7,8 @@
 
 #include "Player.hpp"
 
-Player::Player(uint16_t restorationId) {
-    this->restorationId = restorationId;
+Player::Player(uint16_t id) {
+    this->id = id;
 }
 
 

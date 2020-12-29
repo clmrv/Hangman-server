@@ -13,7 +13,7 @@
 namespace Message {
 
 /// Create 'loggedIn' message
-Out loggedIn(uint16_t restorationID);
+Out loggedIn(uint16_t id);
 
 }
 

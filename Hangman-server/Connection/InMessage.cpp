@@ -11,11 +11,11 @@ using namespace Message;
 
 login::login(const In& message) {
     if(message.length == 2) {
-        uint16_t restorationID;
-        memcpy(&restorationID, message.data, sizeof(restorationID));
-        restorationID = ntohs(restorationID);
-        this->restorationID = restorationID;
+        uint16_t id;
+        memcpy(&id, message.data, sizeof(id));
+        id = ntohs(id);
+        this->id = id;
     } else {
-        this->restorationID = {};
+        this->id = {};
     }
 }

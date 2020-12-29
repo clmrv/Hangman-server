@@ -16,7 +16,7 @@ namespace Message {
 
 
 struct login {
-    std::optional<uint16_t> restorationID;
+    std::optional<uint16_t> id;
 
     /// Create 'login' message
     login(const In& message);

@@ -17,10 +17,10 @@ class Connection;
 
 class Player {
 public:
-    Player(uint16_t restorationId);
+    Player(uint16_t id);
 
-    // Identifier used to connect back to the Player
-    uint16_t restorationId;
+    // Player identifier
+    uint16_t id;
 
     // Connection used by this Player
     Connection* conn;

@@ -9,9 +9,9 @@
 
 using namespace Message;
 
-Out Message::loggedIn(uint16_t restorationID) {
+Out Message::loggedIn(uint16_t id) {
 
-    uint16_t bigEndian = htons(restorationID);
+    uint16_t bigEndian = htons(id);
 
     return Out(MessageType::loggedIn,
                (const uint8_t*) &bigEndian,

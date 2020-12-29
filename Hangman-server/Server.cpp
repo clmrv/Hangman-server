@@ -76,7 +76,7 @@ void Server::eventLoop() {
                         Message::login msg(*conn.incoming.begin());
 
                         // Login player
-                        loginPlayer(conn, msg.restorationID);
+                        loginPlayer(conn, msg.id);
 
                         // Delete first message
                         conn.incoming.pop_front();
@@ -143,44 +143,44 @@ std::string Server::generateRoomId() {
     return id;
 }
 
-void Server::loginPlayer(Connection& conn, std::optional<uint16_t> restorationID) {
+void Server::loginPlayer(Connection& conn, std::optional<uint16_t> existingID) {
 
     // Login existing Player
-    if(auto id = restorationID) {
+    if(auto id = existingID) {
 
-        // Find a player with the same restoration ID (and no connection)
+        // Find a player with the same ID (and no connection)
         auto it = std::find_if(players.begin(), players.end(), [id] (const Player& p) {
-            return p.restorationId == *id && p.conn == nullptr;
+            return p.id == *id && p.conn == nullptr;
         });
 
-        // Restoration ID found, assign Player to Connection and Connection to Player
+        // Player ID found, assign Player to Connection and Connection to Player
         if(it != players.end()) {
             conn.player = &(*it);
             it->conn = &conn;
 
-            // Send 'Logged in' message (containing restoration ID)
+            // Send 'Logged in' message (containing player ID)
             conn.outgoing.push_back(Message::loggedIn(*id));
             return;
         }
     }
 
-    // Generate unique restoration ID
+    // Generate unique player ID
     uint16_t rID;
     std::uniform_int_distribution<uint16_t> dist{};
     do {
         rID = dist(generator);
     } while(std::find_if(players.begin(), players.end(), [rID](const Player& p) {
-        return p.restorationId == rID;
+        return p.id == rID;
     } ) != players.end());
 
-    printf("Random restoration id: %u\n", rID);
+    printf("Random player id: %u\n", rID);
 
     // Create new Player and login
     auto it = players.emplace_back(rID);
     conn.player = &it;
     it.conn = &conn;
 
-    // Send 'Logged in' message (containing restoration ID)
+    // Send 'Logged in' message (containing player ID)
     conn.outgoing.push_back(Message::loggedIn(rID));
 }
 

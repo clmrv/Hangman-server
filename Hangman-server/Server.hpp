@@ -62,8 +62,8 @@ private:
 
     /// Login Player to the Connection
     /// @param conn Connection of the client that wants to log in
-    /// @param restorationID Optional restoration ID of the player
-    void loginPlayer(Connection& conn, std::optional<uint16_t> restorationID = {});
+    /// @param existingID Optional player ID
+    void loginPlayer(Connection& conn, std::optional<uint16_t> existingID = {});
 };
 
 #endif /* Server_hpp */
