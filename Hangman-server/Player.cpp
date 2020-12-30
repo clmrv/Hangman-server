@@ -9,29 +9,19 @@
 
 Player::Player(uint16_t id) {
     this->id = id;
+    // Temporary player name
+    this->name = "Player" + std::to_string(id);
 }
 
+void Player::send(Message::Out message) {
+    if(conn) {
+        conn->outgoing.push_back(std::move(message));
+    }
+}
 
 void Player::setName(std::string name) {
-    if (name.empty())
-        this->name = generateName();
-    else
+    if(!name.empty())
         this->name = name;
-}
-
-std::string Player::generateName() {
-    std::string name;
-    // TODO: Create random name
-    name = "User000";
-    return name;
-}
-
-bool Player::isHost() {
-    return this->host;
-}
-
-void Player::setHost(bool value) {
-    this->host = value;
 }
 
 

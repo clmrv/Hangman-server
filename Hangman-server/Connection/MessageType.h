@@ -32,5 +32,13 @@ enum class MessageType: uint8_t {
     scoreBoard = 0xb2,
 };
 
+enum class MessageError: uint8_t {
+    unknown = 0,
+    roomFull = 1,
+    roomNotFound = 2,
+    newHostNotFound = 3,
+    kickPlayerNotFound = 4,
+};
+
 
 #endif /* MessageType_h */

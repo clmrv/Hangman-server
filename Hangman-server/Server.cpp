@@ -63,30 +63,49 @@ void Server::eventLoop() {
                     }
 
                 }
-
-                // Login players
-                // (should be done on separate thread?)
-                for(auto& [fd, conn] : connections) {
-
-                    // If the first message is of type 'LOGIN'
-                    if(!conn.incoming.empty() > 0 &&
-                       conn.incoming.front().type == MessageType::login) {
-
-                        // Create 'login' message
-                        Message::login msg(*conn.incoming.begin());
-
-                        // Login player
-                        loginPlayer(conn, msg.id);
-
-                        // Delete first message
-                        conn.incoming.pop_front();
-                    }
-                }
-
-
             }
+
+            handleMessages();
         }
 
+    }
+}
+
+void Server::handleMessages() {
+    for(auto& [fd, conn] : connections) {
+        if(auto raw = conn.incoming.begin(); raw != conn.incoming.end()) {
+            switch(raw->type) {
+
+                // Login
+                case MessageType::login:
+                {
+                    Message::login msg(*raw);
+                    login(conn, msg.id);
+                    break;
+                }
+                // Set name
+                case MessageType::setName:
+                {
+                    if(conn.player) {
+                        Message::setName msg(*raw);
+                        conn.player->setName(msg.name);
+                    }
+                    break;
+                }
+                // Join a room
+                case MessageType::joinRoom:
+                {
+                    if(conn.player) {
+                        Message::joinRoom msg(*raw);
+                        joinRoom(*conn.player, msg.id);
+                    }
+                    break;
+                }
+                default:
+                    printf("Got message of unimplemented type: %d\n", static_cast<uint8_t>(raw->type));
+            }
+            conn.incoming.erase(raw);
+        }
     }
 }
 
@@ -124,42 +143,25 @@ void Server::disconnect(int fd) {
 }
 
 
-int Server::createRoom(Player* host) {
-    auto it = rooms.emplace_back(generateRoomId(), host);
-    return (int)rooms.size()-1;
-}
+// MARK: - Handling messages
 
-std::string Server::generateRoomId() {
-    std::string id;
-
-    // Letters between '0' and '9'
-    std::uniform_int_distribution<> dist('0', '9');
-
-    // Create unique id
-    do {
-        id = dist(generator) + dist(generator) + dist(generator) + dist(generator);
-    } while (std::find_if(rooms.begin(), rooms.end(), [id](Room& r) { return r.getId() == id; }) != rooms.end());
-    
-    return id;
-}
-
-void Server::loginPlayer(Connection& conn, std::optional<uint16_t> existingID) {
+void Server::login(Connection& conn, std::optional<uint16_t> existingID) {
 
     // Login existing Player
     if(auto id = existingID) {
 
         // Find a player with the same ID (and no connection)
-        auto it = std::find_if(players.begin(), players.end(), [id] (const Player& p) {
-            return p.id == *id && p.conn == nullptr;
-        });
-
-        // Player ID found, assign Player to Connection and Connection to Player
+        auto it = players.find(*id);
         if(it != players.end()) {
-            conn.player = &(*it);
-            it->conn = &conn;
+            // Player ID found, assign Player to Connection and Connection to Player
+            conn.player = &it->second;
+            it->second.conn = &conn;
 
-            // Send 'Logged in' message (containing player ID)
+            // Send 'Logged in' message (containing player ID) and possible room settings
             conn.outgoing.push_back(Message::loggedIn(*id));
+            conn.outgoing.push_back(Message::roomSettings(Room::possibleSettings));
+
+            // TODO: Check if game in progress
             return;
         }
     }
@@ -169,19 +171,43 @@ void Server::loginPlayer(Connection& conn, std::optional<uint16_t> existingID) {
     std::uniform_int_distribution<uint16_t> dist{};
     do {
         rID = dist(generator);
-    } while(std::find_if(players.begin(), players.end(), [rID](const Player& p) {
-        return p.id == rID;
-    } ) != players.end());
+    } while(players.find(rID) != players.end());
 
     printf("Random player id: %u\n", rID);
 
     // Create new Player and login
-    auto it = players.emplace_back(rID);
-    conn.player = &it;
-    it.conn = &conn;
+    auto it = players.emplace(rID, rID);
+    conn.player = &it.first->second;
+    it.first->second.conn = &conn;
 
-    // Send 'Logged in' message (containing player ID)
+    // Send 'Logged in' message (containing player ID) and possible room settings
     conn.outgoing.push_back(Message::loggedIn(rID));
+    conn.outgoing.push_back(Message::roomSettings(Room::possibleSettings));
+}
+
+// Join a room
+void Server::joinRoom(Player &player, std::string id) {
+    if(auto it = rooms.find(id); it != rooms.end()) {
+        it->second.addPlayer(&player);
+    } else {
+        player.send(Message::error(MessageError::roomNotFound));
+    }
+}
+
+// Create a room
+void Server::createRoom(Player& player, RoomSettings& settings) {
+
+    // Generate new room ID
+    std::string id;
+    std::uniform_int_distribution<char> dist('0', '9');
+
+    // Create unique id
+    do {
+        id = dist(generator) + dist(generator) + dist(generator) + dist(generator) + dist(generator) + dist(generator);
+    } while (rooms.find(id) != rooms.end());
+
+
+    // TODO: Create
 }
 
 

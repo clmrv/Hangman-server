@@ -11,12 +11,16 @@
 
 #include <string>
 #include "Connection.hpp"
+#include "OutMessage.hpp"
 
 class Room;
 class Connection;
 
 class Player {
 public:
+
+    /// Create a new player
+    /// @param id Player identifier
     Player(uint16_t id);
 
     // Player identifier
@@ -24,24 +28,22 @@ public:
 
     // Connection used by this Player
     Connection* conn;
-    
+
+    /// Send a message to client (if there is a connection)
+    void send(Message::Out message);
+
+    // Set the name of the Player
     void setName(std::string name = "");
-    bool isHost();
-    void setHost(bool value);
-    
+
+    /// Get the name of the Player
+    std::string getName();
+
     Room* room;
     
-    std::string getName();
-    
-    
 private:
-
+    /// Player nickname
     std::string name;
-    int health;
-    bool host = false;
-    
-    std::string generateName();
-    
+        
 };
 
 #endif /* Player_hpp */

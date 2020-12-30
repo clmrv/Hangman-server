@@ -13,6 +13,14 @@
 #include "Player.hpp"
 #include "Game.hpp"
 
+struct PossibleRoomSettings {
+    std::vector<std::string> languages;
+    uint8_t wordLength[2];
+    uint16_t gameTime[2];
+    uint8_t healthPoints[2];
+    uint8_t playerCount[2];
+};
+
 enum roomStatus {lobby, inGame, closed};
 
 class Room {
@@ -20,6 +28,7 @@ public:
     Room(std::string roomId, Player* host);
     std::string getId();
     
+    /// Add a player to the room
     void addPlayer(Player* player);
     
     void setLanguage(language lang);
@@ -38,6 +47,10 @@ public:
     
     // DEBUG
     void printPlayers();
+
+    /// Possible room settings
+    // TODO: Read from config file
+    static PossibleRoomSettings possibleSettings;
     
     
 private:

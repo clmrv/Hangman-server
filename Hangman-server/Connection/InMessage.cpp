@@ -6,6 +6,7 @@
 //
 
 #include "InMessage.hpp"
+#include <string>
 
 using namespace Message;
 
@@ -18,4 +19,12 @@ login::login(const In& message) {
     } else {
         this->id = {};
     }
+}
+
+setName::setName(const In& message) {
+    name = std::string((const char*)message.data, message.length);
+}
+
+joinRoom::joinRoom(const In& message) {
+    id = std::string((const char*)message.data, message.length);
 }
