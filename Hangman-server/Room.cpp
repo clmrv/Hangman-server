@@ -15,39 +15,78 @@ PossibleRoomSettings Room::possibleSettings = {
     .playerCount = { 2, 5 }
 };
 
-Room::Room(std::string roomId, Player* host) {
-    host->room = this;
-    //host->setHost(true);
-    
-    this->id = roomId;
-    this->players.push_back(host);
+Room::Room(std::string id, Player* host, RoomSettings& settings) {
+    this->id = id;
+    this->settings = settings;
+    this->players.insert(host);
+    this->host = host;
+    updateAll();
 }
 
-
-void Room::startGame() {
-    this->game = new Game(settings, players);
-}
-
-void Room::addPlayer(Player* player) {
-    this->players.push_back(player);
+void Room::join(Player* player) {
+    this->players.insert(player);
     player->room = this;
-    // TODO: send message to all players
+    updateAll();
 }
 
-void Room::setLanguage(language lang) {
-    settings.lang = lang;
+bool Room::leave(Player* player) {
+    players.erase(player);
+    player->room = nullptr;
+
+    if(players.empty()) {
+        return true;
+    } else {
+        // If the host left the room, set a new one
+        if(player == host) {
+            host = *players.begin();
+        }
+        updateAll();
+        return false;
+    }
 }
 
-std::string Room::getId() {
-    return this->id;
+void Room::setNewHost(Player& currentHost, uint16_t newHostID) {
+    if(&currentHost == host) {
+        auto it = std::find_if(players.begin(),
+                               players.end(),
+                               [newHostID] (const auto& p) { return p->id == newHostID; });
+        if(it != players.end()) {
+            host = *it;
+            updateAll();
+        }
+    }
 }
 
+void Room::kick(Player &currentHost, uint16_t id) {
+    if(&currentHost == host) {
+        auto it = std::find_if(players.begin(),
+                               players.end(),
+                               [id] (const auto& p) { return p->id == id; });
+        if(it != players.end()) {
+            players.erase(it);
+            (*it)->room = nullptr;
+            updateAll();
+        }
+    }
+}
+
+Game Room::start() {
+    for(auto& player : players) {
+        player->room = nullptr;
+    }
+    return Game(settings, players);
+}
+
+void Room::updateAll() {
+    Message::Out msg = Message::roomStatus(settings, id, players, host);
+
+    for(const auto& player : players) {
+        player->send(msg);
+    }
+}
 
 void Room::printPlayers() {
-    for( std::vector<Player*>::iterator it = players.begin(); it != players.end(); it++) {
-        std::cout << (*it)->getName();
-       // if ((*it)->isHost())
-       //     std::cout << " host";
-        std::cout << std::endl;
+    for(const auto& player : players) {
+        std::cout << player->getName() << std::endl;
     }
 }

@@ -73,26 +73,26 @@
     - 2 bajty - punkty
     - 1 bajt - pozostałe życie
     - 1 bajt - czy odgadnął już hasło
-- 1 bajt - długość słowa w (w bajtach)
-- w bajtów - odgadnięte litery (string, \0 - puste miejsce)
+- 1 bajt - długość słowa w (ilość liter - każda litera w UTF-32 ma 4 bajty)
+- 4 * w bajtów - odgadnięte litery w UTF-32 (string, \0 - puste miejsce)
 
 Przykład:
 ```
-0x77 0x00 0x00 0x00
+0x00000077 0x00000000 0x00000000 0x00000000
 w _ _ _
 
-0x77 0xc4 0x85 0x00 0x00
+0x00000077 0x00000105 0x00000000 0x00000000
 w ą _ _
 
-0x77 0xc4 0x85 0xc5 0xbc 0x79
+0x00000077 0x00000105 0x0000017c 0x00000079
 wąży
 ```
 
 ## K > S `guessWord`
-- słowo
+- słowo w UTF-32
 
 ## K > S `guessLetter`
-- 1 - 4 bajtów - litera
+- 4 bajty - litera w UTF-32
 
 ## S > K `scoreBoard`
 - 1 bajt - liczba graczy p

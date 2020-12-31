@@ -97,9 +97,52 @@ void Server::handleMessages() {
                 {
                     if(conn.player) {
                         Message::joinRoom msg(*raw);
-                        joinRoom(*conn.player, msg.id);
+                        joinRoom(conn.player, msg.id);
                     }
                     break;
+                }
+                // Create a room
+                case MessageType::createRoom:
+                {
+                    if(conn.player) {
+                        Message::createRoom msg(*raw);
+                        createRoom(conn.player, msg.settings);
+                    }
+                    break;
+                }
+                // Set a new host
+                case MessageType::setNewHost:
+                {
+                    if(conn.player && conn.player->room) {
+                        Message::setNewHost msg(*raw);
+                        conn.player->room->setNewHost(*conn.player, msg.id);
+                    }
+                }
+                // Kick a player
+                case MessageType::kickPlayer:
+                {
+                    if(conn.player && conn.player->room) {
+                        Message::kickPlayer msg(*raw);
+                        conn.player->room->kick(*conn.player, msg.id);
+                    }
+                }
+                // Leave a room
+                case MessageType::leaveRoom:
+                {
+                    if(conn.player && conn.player->room) {
+                        Room& room = *conn.player->room;
+                        if(room.leave(conn.player)) {
+                            // Empty room - delete
+                            rooms.erase(room.id);
+                        }
+                    }
+                }
+                // Start the game
+                case MessageType::startGame:
+                {
+                    if(conn.player && conn.player->room) {
+                        startGame(*conn.player->room);
+                    }
                 }
                 default:
                     printf("Got message of unimplemented type: %d\n", static_cast<uint8_t>(raw->type));
@@ -129,7 +172,18 @@ void Server::connect() {
 void Server::disconnect(int fd) {
 
     // Remove reference to Connection from Player
-    if(connections[fd].player != nullptr) {
+    if(connections[fd].player) {
+
+        // Remove player from room
+        if(connections[fd].player->room) {
+            std::string roomID = connections[fd].player->room->id;
+            if(connections[fd].player->room->leave(connections[fd].player)) {
+                rooms.erase(roomID);
+            }
+        }
+
+        // TODO: If player not in game, delete player
+        
         connections[fd].player->conn = nullptr;
     }
 
@@ -186,16 +240,16 @@ void Server::login(Connection& conn, std::optional<uint16_t> existingID) {
 }
 
 // Join a room
-void Server::joinRoom(Player &player, std::string id) {
+void Server::joinRoom(Player* player, std::string id) {
     if(auto it = rooms.find(id); it != rooms.end()) {
-        it->second.addPlayer(&player);
+        it->second.join(player);
     } else {
-        player.send(Message::error(MessageError::roomNotFound));
+        player->send(Message::error(MessageError::roomNotFound));
     }
 }
 
 // Create a room
-void Server::createRoom(Player& player, RoomSettings& settings) {
+void Server::createRoom(Player* player, RoomSettings& settings) {
 
     // Generate new room ID
     std::string id;
@@ -203,11 +257,22 @@ void Server::createRoom(Player& player, RoomSettings& settings) {
 
     // Create unique id
     do {
-        id = dist(generator) + dist(generator) + dist(generator) + dist(generator) + dist(generator) + dist(generator);
+        id = {dist(generator), dist(generator), dist(generator), dist(generator), dist(generator), dist(generator)};
     } while (rooms.find(id) != rooms.end());
 
+    printf("Generated room id: %s\n", id.c_str());
 
-    // TODO: Create
+    // Create the new room and assign a pointer to it to the player
+    auto [newRoom, _] = rooms.emplace(std::make_pair(id, Room(id, player, settings)));
+    player->room = &newRoom->second;
+    
+}
+
+// Start a game
+void Server::startGame(Room& room) {
+    auto game = games.insert(games.end(), room.start());
+    game->setupPlayers();
+    rooms.erase(room.id);
 }
 
 

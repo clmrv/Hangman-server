@@ -14,6 +14,7 @@
 #include "OutMessage.hpp"
 
 class Room;
+class Game;
 class Connection;
 
 class Player {
@@ -39,11 +40,13 @@ public:
     std::string getName();
 
     Room* room;
-    
+
+    Game* game;
+
 private:
     /// Player nickname
     std::string name;
-        
+
 };
 
 #endif /* Player_hpp */

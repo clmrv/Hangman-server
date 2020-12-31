@@ -10,8 +10,16 @@
 
 #include "Message.hpp"
 #include "Room.hpp"
+#include "Game.hpp"
+
+#include <map>
+#include <vector>
+#include <set>
+#include <string>
 
 class PossibleRoomSettings;
+class PlayerInGame;
+class RoomSettings;
 
 namespace Message {
 
@@ -23,6 +31,24 @@ Out error(MessageError error);
 
 /// Create 'roomSettings' message
 Out roomSettings(PossibleRoomSettings& settings);
+
+/// Create 'roomStatus' message
+Out roomStatus(RoomSettings& settings, std::string& id, std::set<Player*>& players, Player* host);
+
+
+/// Create 'gameStatus' message
+struct gameStatusBuilder {
+private:
+    std::vector<uint8_t> data;
+    std::vector<uint8_t>::iterator wordPosition;
+public:
+    gameStatusBuilder(uint16_t remainingTime, std::map<Player*, PlayerInGame>& players, uint8_t wordLength);
+
+    gameStatusBuilder& setWord(const std::u32string& word);
+
+    Out build();
+};
+
 
 }
 

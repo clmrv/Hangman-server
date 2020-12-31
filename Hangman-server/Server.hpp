@@ -23,14 +23,6 @@
 #include <algorithm>
 #include <random>
 
-struct AvailableRoomSettings {
-
-};
-
-struct RoomSettings {
-
-};
-
 class Server {
 public:
     
@@ -47,6 +39,7 @@ public:
 private:
     std::map<int, Player> players;
     std::map<std::string, Room> rooms;
+    std::vector<Game> games;
 
     std::map<int, Connection> connections;
     std::vector<pollfd> events;
@@ -80,12 +73,16 @@ private:
     /// Join a room
     /// @param player Player which wants to join
     /// @param id 6-digit code of a room
-    void joinRoom(Player& player, std::string id);
+    void joinRoom(Player* player, std::string id);
 
     /// Create (and join) a room
     /// @param player Player who wants to create a room
     /// @param settings Room settings
-    void createRoom(Player& player, RoomSettings& settings);
+    void createRoom(Player* player, RoomSettings& settings);
+
+    /// Start the game
+    /// @param room Room for the game
+    void startGame(Room& room);
 };
 
 #endif /* Server_hpp */
