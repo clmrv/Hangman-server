@@ -12,7 +12,7 @@
 #include <optional>
 
 #include "Message.hpp"
-#include "Room.hpp"
+#include "../Room.hpp"
 
 namespace Message {
 

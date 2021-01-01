@@ -20,10 +20,7 @@ uint32_t big_endian(uint8_t& first, uint8_t& second, uint8_t& third, uint8_t& fo
 
 login::login(const In& message) {
     if(message.length == 2) {
-        uint16_t id;
-        memcpy(&id, message.data, sizeof(id));
-        id = ntohs(id);
-        this->id = id;
+        this->id = big_endian(message.data[0], message.data[1]);
     } else {
         this->id = {};
     }

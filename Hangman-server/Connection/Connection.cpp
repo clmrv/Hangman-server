@@ -20,7 +20,7 @@ Connection::Connection(int fd) {
 void Connection::read() {
 
     if(nextIn.read(fd)) {
-        printf("Got message: Type: %x, Length: %d Data: %s\n", nextIn.type, nextIn.length, nextIn.data);
+        printf("Got message: Type: %x, Length: %d Data: %s\n", static_cast<uint8_t>(nextIn.type), nextIn.length, nextIn.data);
         incoming.push_back(std::move(nextIn));
     }
 

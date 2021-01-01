@@ -9,8 +9,8 @@
 #define OutMessage_h
 
 #include "Message.hpp"
-#include "Room.hpp"
-#include "Game.hpp"
+#include "../Room.hpp"
+#include "../Game.hpp"
 
 #include <map>
 #include <vector>

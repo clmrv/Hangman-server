@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include "Server.hpp"
-#include "Connection.hpp"
+#include "Connection/Connection.hpp"
 
 
 int main(int argc, const char * argv[]) {

@@ -10,8 +10,8 @@
 #define Player_hpp
 
 #include <string>
-#include "Connection.hpp"
-#include "OutMessage.hpp"
+#include "Connection/Connection.hpp"
+#include "Connection/OutMessage.hpp"
 
 class Room;
 class Game;

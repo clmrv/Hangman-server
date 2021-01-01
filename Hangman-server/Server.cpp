@@ -6,7 +6,7 @@
 //
 
 #include "Server.hpp"
-#include "Message.hpp"
+#include "Connection/Message.hpp"
 
 Server::Server(int port) {
     newConnectionSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);

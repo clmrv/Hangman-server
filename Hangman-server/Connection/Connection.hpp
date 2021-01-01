@@ -8,7 +8,7 @@
 #ifndef Connection_hpp
 #define Connection_hpp
 
-#include "Player.hpp"
+#include "../Player.hpp"
 #include "Message.hpp"
 
 #include <list>

@@ -10,9 +10,9 @@
 
 #include "Room.hpp"
 #include "Player.hpp"
-#include "Connection.hpp"
-#include "OutMessage.hpp"
-#include "InMessage.hpp"
+#include "Connection/Connection.hpp"
+#include "Connection/OutMessage.hpp"
+#include "Connection/InMessage.hpp"
 
 #include <unistd.h>
 #include <poll.h>
