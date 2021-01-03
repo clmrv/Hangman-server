@@ -9,6 +9,7 @@
 #define Room_hpp
 
 #include <set>
+#include <array>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -21,10 +22,10 @@ class Game;
 
 struct PossibleRoomSettings {
     std::vector<std::string> languages;
-    uint8_t wordLength[2];
-    uint16_t gameTime[2];
-    uint8_t healthPoints[2];
-    uint8_t playerCount[2];
+    std::array<uint8_t, 2> wordLength;
+    std::array<uint16_t, 2> gameTime;
+    std::array<uint8_t, 2> healthPoints;
+    std::array<uint8_t, 2> playerCount;
 };
 
 struct RoomSettings {

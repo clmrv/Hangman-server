@@ -117,6 +117,7 @@ void Server::handleMessages() {
                         Message::setNewHost msg(*raw);
                         conn.player->room->setNewHost(*conn.player, msg.id);
                     }
+                    break;
                 }
                 // Kick a player
                 case MessageType::kickPlayer:
@@ -125,6 +126,7 @@ void Server::handleMessages() {
                         Message::kickPlayer msg(*raw);
                         conn.player->room->kick(*conn.player, msg.id);
                     }
+                    break;
                 }
                 // Leave a room
                 case MessageType::leaveRoom:
@@ -136,6 +138,7 @@ void Server::handleMessages() {
                             rooms.erase(room.id);
                         }
                     }
+                    break;
                 }
                 // Start the game
                 case MessageType::startGame:
@@ -143,6 +146,7 @@ void Server::handleMessages() {
                     if(conn.player && conn.player->room) {
                         startGame(*conn.player->room);
                     }
+                    break;
                 }
                 default:
                     printf("Got message of unimplemented type: %d\n", static_cast<uint8_t>(raw->type));

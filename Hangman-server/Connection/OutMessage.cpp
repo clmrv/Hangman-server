@@ -51,12 +51,12 @@ Out Message::roomSettings(PossibleRoomSettings& settings) {
         data.insert(data.end(), lang.begin(), lang.end());
     }
     
-    data.insert(data.end(), settings.wordLength, settings.wordLength + 2);
+    data.insert(data.end(), settings.wordLength.begin(), settings.wordLength.end());
     push_back_uint16(data, settings.gameTime[0]);
     push_back_uint16(data, settings.gameTime[1]);
-    data.insert(data.end(), settings.healthPoints, settings.healthPoints + 2);
-    data.insert(data.end(), settings.playerCount, settings.playerCount + 2);
-
+    data.insert(data.end(), settings.healthPoints.begin(), settings.healthPoints.end());
+    data.insert(data.end(), settings.playerCount.begin(), settings.playerCount.end());
+    printf("PLAYER COUNT: %d-%d\n", settings.playerCount[0], data.back());
 
     return Out(MessageType::roomSettings, data.data(), data.size());
 

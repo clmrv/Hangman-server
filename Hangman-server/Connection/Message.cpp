@@ -114,7 +114,7 @@ Out::Out(MessageType type, const char* string) {
 /// Create a message from bytes
 Out::Out(MessageType type, const uint8_t* bytes, size_t count) {
     this->count = count + 3;
-    this->bytes = new uint8_t[count];
+    this->bytes = new uint8_t[this->count];
     this->bytes[0] = static_cast<uint8_t>(type);
     uint16_t len = htons((uint16_t)count);
     memcpy(this->bytes + 1, &len, sizeof(len));

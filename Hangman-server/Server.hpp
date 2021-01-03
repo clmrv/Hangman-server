@@ -18,7 +18,7 @@
 #include <poll.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <map>
+#include <unordered_map>
 #include <optional>
 #include <algorithm>
 #include <random>
@@ -37,11 +37,11 @@ public:
     
     
 private:
-    std::map<int, Player> players;
-    std::map<std::string, Room> rooms;
+    std::unordered_map<int, Player> players;
+    std::unordered_map<std::string, Room> rooms;
     std::vector<Game> games;
 
-    std::map<int, Connection> connections;
+    std::unordered_map<int, Connection> connections;
     std::vector<pollfd> events;
     pollfd newEvent;
     
