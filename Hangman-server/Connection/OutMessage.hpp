@@ -17,9 +17,9 @@
 #include <set>
 #include <string>
 
-class PossibleRoomSettings;
-class PlayerInGame;
-class RoomSettings;
+struct PossibleRoomSettings;
+struct PlayerInGame;
+struct RoomSettings;
 
 namespace Message {
 
@@ -35,6 +35,8 @@ Out roomSettings(PossibleRoomSettings& settings);
 /// Create 'roomStatus' message
 Out roomStatus(RoomSettings& settings, std::string& id, std::set<Player*>& players, Player* host);
 
+/// Create 'kicked' message
+Out kicked();
 
 /// Create 'gameStatus' message
 struct gameStatusBuilder {

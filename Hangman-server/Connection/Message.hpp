@@ -13,6 +13,8 @@
 #include <errno.h>
 #include <stdint.h>
 #include <arpa/inet.h>
+#include <array>
+#include <vector>
 
 #include "MessageType.h"
 
@@ -24,23 +26,16 @@ namespace Message {
 
 class In {
 private:
-    uint8_t *buf;
+    std::array<uint8_t, 3> buf;
     uint32_t bufRead = 0;
 
 public:
 
     MessageType type = MessageType::unknown;
     uint16_t length = 0;
-    uint8_t *data;
+    std::vector<uint8_t> data;
 
     bool error = false;
-
-    In();
-
-    // Move constructor
-    In(In&& other);
-
-    ~In();
 
     /// Read message from a file descriptor
     /// @param fd File descriptor to read data from
@@ -56,27 +51,18 @@ public:
 
 class Out {
 private:
-    uint8_t* bytes;
-    size_t count = 0;
+    std::vector<uint8_t> bytes;
     size_t written = 0;
 
 public:
 
     bool error = false;
 
-    /// Create a message from a text string
-    Out(MessageType type, const char* string);
-
     /// Create a message from bytes
     Out(MessageType type, const uint8_t* bytes, size_t count);
 
-    /// Move constructor
-    Out(Out&& o);
-
-    // Copy constructor
-    Out(const Out& o);
-
-    ~Out();
+    /// Create a message from vector reference
+    Out(MessageType type, const std::vector<uint8_t>& bytes);
 
     /// Write data to a descriptor
     /// @return Whether writing has been completed

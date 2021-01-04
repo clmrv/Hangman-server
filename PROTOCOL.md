@@ -44,6 +44,7 @@
 - 2 bajty - czas gry
 - 1 bajt - ilość punktów gry
 - 6 bajtów - identyfikator pokoju
+- 1 bajt - max. liczba graczy
 - 1 bajt - p - liczba graczy
 - p razy:
     - 2 bajty - id gracza
@@ -57,11 +58,14 @@
 ## K > S `kickPlayer`
 - 2 bajty id gracza
 
+## S > K `kicked`
+- nic
+
 ## K > S `leaveRoom`
 - nic
 
 ## K > S `startGame`
-- 0
+- nic
 
 ## S > K `gameStatus`
 - 2 bajty - czas do końca

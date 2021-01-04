@@ -28,6 +28,7 @@ enum class MessageType: uint8_t {
     error = 0x81,
     roomSettings = 0xa1,
     roomStatus = 0xa2,
+    kicked = 0xa3,
     gameStatus = 0xb1,
     scoreBoard = 0xb2,
 };

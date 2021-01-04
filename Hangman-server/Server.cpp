@@ -35,7 +35,7 @@ void Server::eventLoop() {
 
     while (true) {
 
-        if(poll(events.data(), (unsigned int)events.size(), -1) > 0) {
+        if(poll(events.data(), (unsigned int)events.size(), 10) > 0) {
             for(auto const &event : events) {
 
                 if(event.fd == newConnectionSocket) {
@@ -66,6 +66,17 @@ void Server::eventLoop() {
             }
 
             handleMessages();
+        }
+
+        // Mark whether poll should wait for output event
+        for(auto& event : events) {
+            if(event.fd != newConnectionSocket) {
+                if(!connections[event.fd].outgoing.empty()) {
+                    event.events = POLLIN | POLLOUT | POLLHUP;
+                } else {
+                    event.events = POLLIN | POLLHUP;
+                }
+            }
         }
 
     }
@@ -166,7 +177,7 @@ void Server::connect() {
     connections.emplace(fd, fd);
 
     // Create new event
-    events.push_back({ fd, POLLIN | POLLOUT | POLLHUP });
+    events.push_back({ fd, POLLIN | POLLHUP });
 
     printf("Connected: %s, fd: %d, read_event: %lu\n",
            inet_ntoa(socket.sin_addr), fd, connections.size());

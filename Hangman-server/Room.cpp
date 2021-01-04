@@ -65,6 +65,7 @@ void Room::kick(Player &currentHost, uint16_t id) {
         if(it != players.end()) {
             players.erase(it);
             (*it)->room = nullptr;
+            (*it)->send(Message::kicked());
             updateAll();
         }
     }

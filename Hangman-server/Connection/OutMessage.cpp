@@ -27,11 +27,9 @@ void push_back_uint16(std::vector<uint8_t>& vec, uint16_t value) {
 
 Out Message::loggedIn(uint16_t id) {
 
-    uint16_t bigEndian = htons(id);
-
-    return Out(MessageType::loggedIn,
-               (const uint8_t*) &bigEndian,
-               (size_t) sizeof(bigEndian));
+    std::vector<uint8_t> bigEndian { (uint8_t)(id >> 8), (uint8_t)(id & 0x00ff) };
+    
+    return Out(MessageType::loggedIn, bigEndian);
 }
 
 Out Message::error(MessageError error) {
@@ -56,10 +54,8 @@ Out Message::roomSettings(PossibleRoomSettings& settings) {
     push_back_uint16(data, settings.gameTime[1]);
     data.insert(data.end(), settings.healthPoints.begin(), settings.healthPoints.end());
     data.insert(data.end(), settings.playerCount.begin(), settings.playerCount.end());
-    printf("PLAYER COUNT: %d-%d\n", settings.playerCount[0], data.back());
 
-    return Out(MessageType::roomSettings, data.data(), data.size());
-
+    return Out(MessageType::roomSettings, data);
 }
 
 
@@ -71,6 +67,7 @@ Out Message::roomStatus(RoomSettings &settings, std::string& id, std::set<Player
     push_back_uint16(data, settings.gameTime);
     data.push_back(settings.healthPoints);
     data.insert(data.end(), id.begin(), id.end());
+    data.push_back(settings.maxPlayers);
     data.push_back(players.size());
 
     for(const auto& player : players) {
@@ -82,7 +79,11 @@ Out Message::roomStatus(RoomSettings &settings, std::string& id, std::set<Player
 
     push_back_uint16(data, host->id);
 
-    return Out(MessageType::roomStatus, data.data(), data.size());
+    return Out(MessageType::roomStatus, data);
+}
+
+Out Message::kicked() {
+    return Out(MessageType::kicked, std::vector<uint8_t>());
 }
 
 gameStatusBuilder::gameStatusBuilder(uint16_t remainingTime,
@@ -114,6 +115,6 @@ gameStatusBuilder& gameStatusBuilder::setWord(const std::u32string& word) {
 }
 
 Out gameStatusBuilder::build() {
-    return Out(MessageType::gameStatus, data.data(), data.size());
+    return Out(MessageType::gameStatus, data);
 }
 
