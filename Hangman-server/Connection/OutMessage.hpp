@@ -44,7 +44,7 @@ private:
     std::vector<uint8_t> data;
     std::vector<uint8_t>::iterator wordPosition;
 public:
-    gameStatusBuilder(uint16_t remainingTime, std::map<Player*, PlayerInGame>& players, uint8_t wordLength);
+    gameStatusBuilder(uint64_t endTime, std::map<Player*, PlayerInGame>& players, uint8_t wordLength);
 
     gameStatusBuilder& setWord(const std::u32string& word);
 

@@ -9,6 +9,17 @@
 
 using namespace Message;
 
+void push_back_uint64(std::vector<uint8_t>& vec, uint64_t value) {
+    vec.push_back(uint8_t((value >> 56) & 0xFFull));
+    vec.push_back(uint8_t((value >> 48) & 0xFFull));
+    vec.push_back(uint8_t((value >> 40) & 0xFFull));
+    vec.push_back(uint8_t((value >> 32) & 0xFFull));
+    vec.push_back(uint8_t((value >> 24) & 0xFFull));
+    vec.push_back(uint8_t((value >> 16) & 0xFFull));
+    vec.push_back(uint8_t((value >> 8) & 0xFFull));
+    vec.push_back(uint8_t(value & 0xFFull));
+}
+
 void push_back_uint16(std::vector<uint8_t>& vec, uint16_t value) {
     vec.push_back(uint8_t(value >> 8));
     vec.push_back(uint8_t(value & 0x00ff));
@@ -86,11 +97,11 @@ Out Message::kicked() {
     return Out(MessageType::kicked, std::vector<uint8_t>());
 }
 
-gameStatusBuilder::gameStatusBuilder(uint16_t remainingTime,
+gameStatusBuilder::gameStatusBuilder(uint64_t endTime,
                                      std::map<Player*, PlayerInGame>& players,
                                      uint8_t wordLength) {
 
-    push_back_uint16(data, remainingTime);
+    push_back_uint64(data, endTime);
 
     data.push_back(players.size());
     for(const auto& [player, inGame] : players) {
