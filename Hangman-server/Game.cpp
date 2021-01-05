@@ -49,11 +49,10 @@ std::string Game::randomWord(std::string language, uint8_t length) {
 
 void Game::updateAll() {
 
-    // Calculate remaining time
-    auto diff = endTime - std::chrono::system_clock::now();
-    uint16_t remainingTime = std::chrono::duration_cast<std::chrono::seconds>(diff).count();
+    // Get epoch end time
+    auto epoch = std::chrono::duration_cast<std::chrono::seconds>(endTime.time_since_epoch()).count();
 
-    Message::gameStatusBuilder builder(remainingTime, players, word.size());
+    Message::gameStatusBuilder builder(epoch, players, word.size());
 
     // Send message to every player
     for(const auto& [player, inGame] : players) {

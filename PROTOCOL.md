@@ -68,7 +68,7 @@
 - nic
 
 ## S > K `gameStatus`
-- 2 bajty - czas do końca
+- 8 bajtów - moment końca gry (czas uniksowy, epoch time, unix timestamp)
 - 1 bajt - liczba graczy p
 - p razy:
     - 2 bajty - id gracza
