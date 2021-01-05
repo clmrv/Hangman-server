@@ -14,6 +14,9 @@
 #include <map>
 #include <string>
 #include <chrono>
+#include <vector>
+#include <fstream>
+#include <random>
 
 class Player;
 struct RoomSettings;
@@ -38,6 +41,7 @@ public:
     void guessWord(std::u32string& word);
 
     void guessLetter(char32_t& letter);
+    
     
 private:
     /// Players

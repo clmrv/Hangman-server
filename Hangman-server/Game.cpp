@@ -44,7 +44,22 @@ void Game::setupPlayers() {
 }
 
 std::string Game::randomWord(std::string language, uint8_t length) {
-    return "Wąż";
+    // LENGTH: 3-13
+    std::ifstream file("/Users/celmer/Documents/kody/sk2/Hangman-server/words/"+language+"/"+std::to_string(length)); // later add files to working directory?
+    
+    
+    std::vector<std::string> matchingWords;
+    std::string word;
+    int count = 0;
+    while (std::getline(file, word)) {
+        matchingWords.push_back(word);
+        count++;
+    }
+    file.close();
+
+    word = matchingWords[rand()%count];
+    std::cout << "Guess word: " << word << std::endl;
+    return word;
 }
 
 void Game::updateAll() {
