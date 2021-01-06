@@ -27,6 +27,6 @@ void Player::setName(std::string name) {
 
 // DEBUG
 
-std::string Player::getName() {
+std::string Player::getName() const {
     return this->name;
 }

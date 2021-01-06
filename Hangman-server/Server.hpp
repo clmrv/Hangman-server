@@ -60,6 +60,9 @@ private:
     /// Handle messages from every connection
     void handleMessages();
 
+    /// Handle every game
+    void handleGames();
+
     /// Create a new connection
     void connect();
 

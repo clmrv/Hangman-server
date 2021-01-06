@@ -37,8 +37,8 @@ bool Room::leave(Player* player) {
     }
 }
 
-void Room::setNewHost(Player& currentHost, uint16_t newHostID) {
-    if(&currentHost == host) {
+void Room::setNewHost(Player* currentHost, uint16_t newHostID) {
+    if(currentHost == host) {
         auto it = std::find_if(players.begin(),
                                players.end(),
                                [newHostID] (const auto& p) { return p->id == newHostID; });
@@ -49,8 +49,8 @@ void Room::setNewHost(Player& currentHost, uint16_t newHostID) {
     }
 }
 
-void Room::kick(Player &currentHost, uint16_t id) {
-    if(&currentHost == host) {
+void Room::kick(Player* currentHost, uint16_t id) {
+    if(currentHost == host) {
         auto it = std::find_if(players.begin(),
                                players.end(),
                                [id] (const auto& p) { return p->id == id; });

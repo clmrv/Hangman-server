@@ -68,6 +68,8 @@ void Server::eventLoop() {
             handleMessages();
         }
 
+        handleGames();
+
         // Mark whether poll should wait for output event
         for(auto& event : events) {
             if(event.fd != newConnectionSocket) {
@@ -126,7 +128,7 @@ void Server::handleMessages() {
                 {
                     if(conn.player && conn.player->room) {
                         Message::setNewHost msg(*raw);
-                        conn.player->room->setNewHost(*conn.player, msg.id);
+                        conn.player->room->setNewHost(conn.player, msg.id);
                     }
                     break;
                 }
@@ -135,7 +137,7 @@ void Server::handleMessages() {
                 {
                     if(conn.player && conn.player->room) {
                         Message::kickPlayer msg(*raw);
-                        conn.player->room->kick(*conn.player, msg.id);
+                        conn.player->room->kick(conn.player, msg.id);
                     }
                     break;
                 }
@@ -159,10 +161,48 @@ void Server::handleMessages() {
                     }
                     break;
                 }
+                // Guess a word
+                case MessageType::guessWord:
+                {
+                    if(conn.player && conn.player->game) {
+                        Message::guessWord msg(*raw);
+                        Game& game = *conn.player->game;
+                        if(game.guessWord(conn.player, msg.word)) {
+                            // Game finished - can delete
+                            games.erase(std::remove_if(games.begin(), games.end(), [&game] (const Game& g) { return game == g; }));
+                        }
+                    }
+                    break;
+                }
+                // Guess a letter
+                case MessageType::guessLetter:
+                {
+                    if(conn.player && conn.player->game) {
+                        Message::guessLetter msg(*raw);
+                        Game& game = *conn.player->game;
+                        if(game.guessLetter(conn.player, msg.letter)) {
+                            // Game finished - can delete
+                            games.erase(std::remove_if(games.begin(), games.end(), [&game] (const Game& g) { return game == g; }));
+                        }
+                    }
+                    break;
+                }
                 default:
                     printf("Got message of unimplemented type: %d\n", static_cast<uint8_t>(raw->type));
             }
             conn.incoming.erase(raw);
+        }
+    }
+}
+
+void Server::handleGames() {
+    // Loop every game
+    for(auto it = games.begin(); it != games.end(); ) {
+        if(it->loop()) {
+            // Delete game when finished
+            it = games.erase(it);
+        } else {
+            it++;
         }
     }
 }
@@ -230,7 +270,10 @@ void Server::login(Connection& conn, std::optional<uint16_t> existingID) {
             conn.outgoing.push_back(Message::loggedIn(*id));
             conn.outgoing.push_back(Message::roomSettings(config.roomSettings));
 
-            // TODO: Check if game in progress
+            // Send a message if the player returned
+            if(it->second.game) {
+                it->second.game->playerReturned(&it->second);
+            }
             return;
         }
     }

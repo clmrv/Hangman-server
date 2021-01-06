@@ -51,6 +51,8 @@ public:
     Out build();
 };
 
+/// Create 'scoreBoard' message
+Out scoreboard(std::vector<PlayerInGame>& players);
 
 }
 

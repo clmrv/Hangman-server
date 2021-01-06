@@ -20,6 +20,13 @@ void push_back_uint64(std::vector<uint8_t>& vec, uint64_t value) {
     vec.push_back(uint8_t(value & 0xFFull));
 }
 
+void push_back_uint32(std::vector<uint8_t>& vec, uint32_t value) {
+    vec.push_back(uint8_t((value >> 24) & 0xFFul));
+    vec.push_back(uint8_t((value >> 16) & 0xFFul));
+    vec.push_back(uint8_t((value >> 8) & 0xFFul));
+    vec.push_back(uint8_t(value & 0xFFul));
+}
+
 void push_back_uint16(std::vector<uint8_t>& vec, uint16_t value) {
     vec.push_back(uint8_t(value >> 8));
     vec.push_back(uint8_t(value & 0x00ff));
@@ -106,7 +113,9 @@ gameStatusBuilder::gameStatusBuilder(uint64_t endTime,
     data.push_back(players.size());
     for(const auto& [player, inGame] : players) {
         push_back_uint16(data, player->id);
-        data.push_back(player->getName().size());
+        std::string name = player->getName();
+        data.push_back(name.size());
+        data.insert(data.end(), name.begin(), name.end());
         push_back_uint16(data, inGame.points);
         data.push_back(inGame.health);
         data.push_back(inGame.guessed ? 1 : 0);
@@ -120,8 +129,14 @@ gameStatusBuilder::gameStatusBuilder(uint64_t endTime,
 
 gameStatusBuilder& gameStatusBuilder::setWord(const std::u32string& word) {
 
+    std::vector<uint8_t> raw;
+    raw.reserve(word.size() * 4);
+    for(const auto& letter : word) {
+        push_back_uint32(raw, letter);
+    }
+
     // Insert word instead of the empty one
-    wordPosition = data.insert(wordPosition, word.begin(), word.end());
+    wordPosition = data.insert(wordPosition, raw.begin(), raw.end());
     return *this;
 }
 
@@ -129,3 +144,18 @@ Out gameStatusBuilder::build() {
     return Out(MessageType::gameStatus, data);
 }
 
+Out Message::scoreboard(std::vector<PlayerInGame>& players) {
+    std::vector<uint8_t> data;
+
+    data.push_back(players.size());
+
+    for(const auto& player : players) {
+        push_back_uint16(data, player.player->id);
+        std::string name = player.player->getName();
+        data.push_back(name.size());
+        data.insert(data.end(), name.begin(), name.end());
+        push_back_uint16(data, player.points);
+    }
+
+    return Out(MessageType::scoreBoard, data);
+}

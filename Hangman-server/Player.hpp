@@ -37,7 +37,7 @@ public:
     void setName(std::string name = "");
 
     /// Get the name of the Player
-    std::string getName();
+    std::string getName() const;
 
     Room* room;
 

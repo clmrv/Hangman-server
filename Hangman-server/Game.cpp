@@ -10,6 +10,13 @@
 #include <locale>
 #include <codecvt>
 
+bool PlayerInGame::operator<(const PlayerInGame& other) const {
+    return points < other.points;
+}
+bool PlayerInGame::operator>(const PlayerInGame& other) const {
+    return points > other.points;
+}
+
 // Init random number generator
 std::mt19937_64 Game::rng = std::mt19937_64 { (uint64_t)std::chrono::high_resolution_clock::now().time_since_epoch().count() };
 
@@ -40,9 +47,29 @@ Game::Game(RoomSettings& settings, std::set<Player*>& players) {
     }
 }
 
+bool Game::operator==(const Game &other) {
+    bool basic = word == other.word && startTime == other.startTime && endTime == other.endTime && players.size() == other.players.size();
+    if(!basic) {
+        return false;
+    }
+    for(const auto& [player, inGame] : players) {
+        if(other.players.find(player) == other.players.end()) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void Game::setupPlayers() {
     for(auto& [player, inGame] : players) {
         player->game = this;
+    }
+    sendGameStatus();
+}
+
+void Game::teardownPlayers() {
+    for(auto& [player, inGame] : players) {
+        player->game = nullptr;
     }
 }
 
@@ -72,7 +99,7 @@ std::string Game::randomWord(std::string language, uint8_t length) {
     return word;
 }
 
-void Game::updateAll() {
+void Game::sendGameStatus() {
 
     // Get epoch end time
     auto epoch = std::chrono::duration_cast<std::chrono::seconds>(endTime.time_since_epoch()).count();
@@ -84,4 +111,204 @@ void Game::updateAll() {
         player->send( builder.setWord(inGame.word).build() );
     }
     
+}
+
+void Game::sendScoreboard() {
+
+    std::vector<PlayerInGame> sorted;
+    sorted.reserve(players.size());
+
+    for(const auto& [player, inGame] : players) {
+        sorted.push_back(inGame);
+    }
+
+    std::sort(sorted.begin(), sorted.end(), std::greater<>());
+
+    // Create 'scoreboard' message
+    Message::Out msg = Message::scoreboard(sorted);
+
+    // Send message to every player
+    for(const auto& [player, inGame] : players) {
+        Message::Out copied = msg;
+        player->send(copied);
+    }
+
+}
+
+bool Game::loop() {
+
+    auto now = std::chrono::system_clock::now();
+    auto remaining = std::chrono::duration_cast<std::chrono::seconds>(endTime - now).count();
+
+    // If time is up, finish the game
+    if(remaining <= 0) {
+        sendScoreboard();
+        teardownPlayers();
+        return true;
+    }
+
+    // There is still some time left
+
+    // True when all the players guessed or run out of health
+    bool finished = std::find_if(players.begin(),
+                                 players.end(),
+                                 [] (const std::pair<Player*, PlayerInGame>& p) {
+                                     return !p.second.guessed || p.second.health > 0;
+                                 }) == players.end();
+
+    if(finished) {
+        sendScoreboard();
+        teardownPlayers();
+    }
+
+    return finished;
+}
+
+void Game::playerReturned(Player* player) {
+
+    // Get epoch end time
+    auto epoch = std::chrono::duration_cast<std::chrono::seconds>(endTime.time_since_epoch()).count();
+
+    player->send(
+                 Message::gameStatusBuilder(epoch, players, word.size()).setWord(players[player].word).build()
+                 );
+
+}
+
+
+bool Game::guessWord(Player *player, std::u32string &word) {
+    PlayerInGame& p = players[player];
+
+    // If player hasn't guessed yet and has health left
+    if(!p.guessed && p.health > 0) {
+
+        // Player correctly guessed the word
+        if(word == this->word) {
+            p.guessed = true;
+            p.word = word;
+
+            auto duration = std::chrono::duration_cast<std::chrono::seconds>(endTime - startTime).count();
+            auto remaining = std::chrono::duration_cast<std::chrono::seconds>(endTime - std::chrono::system_clock::now()).count();
+
+            // 1.0 - player guessed the word at the beginning of the game
+            // 0.0 - player guessed the word at the end of the game
+            double timePercentage = (double)remaining / (double)duration;
+
+            // Letters that were missing (not guessed)
+            uint64_t missingLetters = std::count(p.word.begin(), p.word.end(), 0x00000000);
+            // 1.0 - all letters were missing
+            // 0.0 - none letters were missing
+            double lettersPercentage = (double)missingLetters / (double)p.word.size();
+
+            // TODO: Better calculate points
+            // ???
+            p.points += 1000;
+            p.points += timePercentage * 2000;
+            p.points += missingLetters * 30;        // 20 pts when guessing each letter separately
+            p.points += lettersPercentage * 100;
+        }
+
+        // Player made a wrong guess
+        else {
+            p.health -= 1;
+        }
+    }
+
+
+    // True when all the players guessed or run out of health
+    bool finished = std::find_if(players.begin(),
+                                 players.end(),
+                                 [] (const std::pair<Player*, PlayerInGame>& p) {
+                                     return !p.second.guessed && p.second.health > 0;
+                                 }) == players.end();
+
+    // Send a message to all the players
+    if(finished) {
+        sendScoreboard();
+        teardownPlayers();
+    } else {
+        sendGameStatus();
+    }
+
+    return finished;
+}
+
+bool Game::guessLetter(Player *player, char32_t &letter) {
+    PlayerInGame& p = players[player];
+
+    // If player hasn't guessed yet and has health left
+    if(!p.guessed && p.health > 0) {
+
+        // If player hasn't guessed this letter yet
+        if(p.word.find(letter) == std::u32string::npos) {
+
+            // Player correctly guessed the letter
+            if(word.find(letter) != std::u32string::npos) {
+
+                uint8_t count = 0;
+                for(int i = 0; i < word.size(); i++) {
+                    if(word[i] == letter) {
+                        p.word[i] = letter;
+                        p.points += 20;         // 20 pts for each letter occurence
+                        count += 1;
+                    }
+                }
+
+                // Player guessed all the letters
+                if(p.word.find('\0') == p.word.npos) {
+                    p.guessed = true;
+
+                    auto duration = std::chrono::duration_cast<std::chrono::seconds>(endTime - startTime).count();
+                    auto remaining = std::chrono::duration_cast<std::chrono::seconds>(endTime - std::chrono::system_clock::now()).count();
+
+                    // 1.0 - player guessed the word at the beginning of the game
+                    // 0.0 - player guessed the word at the end of the game
+                    double timePercentage = (double)remaining / (double)duration;
+
+                    // Letters that were missing (not guessed)
+                    // 1.0 - all letters were missing
+                    // 0.0 - none letters were missing
+                    double lettersPercentage = (double)count / (double)p.word.size();
+
+                    // TODO: Better calculate points
+                    // ???
+                    p.points += 1000;
+                    p.points += timePercentage * 2000;
+                    p.points += count * 10;                 // 20 pts when guessing each letter separately
+                    p.points += lettersPercentage * 100;
+
+                }
+            }
+
+            // Player made a wrong guess
+            else {
+                p.health -= 1;
+            }
+
+        }
+
+        // Player already has this letter
+        else {
+            // TODO: Health?
+            p.health -= 1;
+        }
+    }
+
+
+    // True when all the players guessed or run out of health
+    bool finished = std::find_if(players.begin(),
+                                 players.end(),
+                                 [] (const std::pair<Player*, PlayerInGame>& p) {
+                                     return !p.second.guessed && p.second.health > 0;
+                                 }) == players.end();
+
+    // Send a message to all the players
+    if(finished) {
+        sendScoreboard();
+        teardownPlayers();
+    } else {
+        sendGameStatus();
+    }
+
+    return finished;
 }

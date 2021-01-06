@@ -58,12 +58,12 @@ public:
     /// Set new host of the room
     /// @param currentHost The host requesting a change
     /// @param newHostID ID of the new host
-    void setNewHost(Player& currentHost, uint16_t newHostID);
+    void setNewHost(Player* currentHost, uint16_t newHostID);
 
     /// Kick a player from the room
     /// @param currentHost The host requesting a kick
     /// @param id ID of the player to be kicked
-    void kick(Player& currentHost, uint16_t id);
+    void kick(Player* currentHost, uint16_t id);
 
     /// Starts a game
     /// @note The room can now be deleted
