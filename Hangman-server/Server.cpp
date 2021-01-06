@@ -8,7 +8,7 @@
 #include "Server.hpp"
 #include "Connection/Message.hpp"
 
-Server::Server(int port) {
+Server::Server(int port): config("config") {    
     newConnectionSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (newConnectionSocket == -1) {
         printf("socked failed\n");
@@ -19,7 +19,7 @@ Server::Server(int port) {
    
     sockaddr_in servAddr;
     servAddr.sin_family = AF_INET;
-    servAddr.sin_port = htons(port);
+    servAddr.sin_port = htons(config.port);
     servAddr.sin_addr.s_addr = INADDR_ANY;
     if (bind(newConnectionSocket, (sockaddr*)&servAddr, sizeof(servAddr) ) == -1) {
         printf("Binding failed: %d\n", errno);
@@ -228,7 +228,7 @@ void Server::login(Connection& conn, std::optional<uint16_t> existingID) {
 
             // Send 'Logged in' message (containing player ID) and possible room settings
             conn.outgoing.push_back(Message::loggedIn(*id));
-            conn.outgoing.push_back(Message::roomSettings(Room::possibleSettings));
+            conn.outgoing.push_back(Message::roomSettings(config.roomSettings));
 
             // TODO: Check if game in progress
             return;
@@ -251,7 +251,7 @@ void Server::login(Connection& conn, std::optional<uint16_t> existingID) {
 
     // Send 'Logged in' message (containing player ID) and possible room settings
     conn.outgoing.push_back(Message::loggedIn(rID));
-    conn.outgoing.push_back(Message::roomSettings(Room::possibleSettings));
+    conn.outgoing.push_back(Message::roomSettings(config.roomSettings));
 }
 
 // Join a room

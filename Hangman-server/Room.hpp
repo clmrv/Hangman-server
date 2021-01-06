@@ -71,11 +71,6 @@ public:
     
     // DEBUG
     void printPlayers();
-
-    /// Possible room settings
-    // TODO: Read from config file
-    static PossibleRoomSettings possibleSettings;
-    
     
 private:
     /// Players currently in the room

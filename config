@@ -1,0 +1,6 @@
+port=1234
+langs=pl,en
+wordLength=3-13
+gameTime=30-300
+healthPoints=1-10
+players=2-5

@@ -7,14 +7,6 @@
 
 #include "Room.hpp"
 
-PossibleRoomSettings Room::possibleSettings = {
-    .languages = { "pl", "us" },
-    .wordLength = { 3, 13 },
-    .gameTime = { 30, 300 },
-    .healthPoints = { 1, 5 },
-    .playerCount = { 2, 5 }
-};
-
 Room::Room(std::string id, Player* host, RoomSettings& settings) {
     this->id = id;
     this->settings = settings;

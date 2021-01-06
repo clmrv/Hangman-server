@@ -8,6 +8,7 @@
 #ifndef Server_hpp
 #define Server_hpp
 
+#include "Config.hpp"
 #include "Room.hpp"
 #include "Player.hpp"
 #include "Connection/Connection.hpp"
@@ -41,6 +42,7 @@ private:
     std::unordered_map<std::string, Room> rooms;
     std::vector<Game> games;
 
+    Config config;
     std::unordered_map<int, Connection> connections;
     std::vector<pollfd> events;
     pollfd newEvent;
