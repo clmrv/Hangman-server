@@ -10,6 +10,9 @@
 #include <locale>
 #include <codecvt>
 
+// Init random number generator
+std::mt19937_64 Game::rng = std::mt19937_64 { (uint64_t)std::chrono::high_resolution_clock::now().time_since_epoch().count() };
+
 Game::Game(RoomSettings& settings, std::set<Player*>& players) {
 
     // Get UTF-8 word
@@ -45,19 +48,26 @@ void Game::setupPlayers() {
 
 std::string Game::randomWord(std::string language, uint8_t length) {
     // LENGTH: 3-13
-    std::ifstream file("/Users/celmer/Documents/kody/sk2/Hangman-server/words/"+language+"/"+std::to_string(length)); // later add files to working directory?
-    
-    
-    std::vector<std::string> matchingWords;
+    std::ifstream file("./words/" + language + "/" + std::to_string(length));
+
     std::string word;
-    int count = 0;
-    while (std::getline(file, word)) {
-        matchingWords.push_back(word);
-        count++;
+
+    // Load the number of words from the first line of the file
+    std::getline(file, word);
+    uint64_t words = std::stoll(word);
+
+    // Random word number
+    uint64_t rand = std::uniform_int_distribution<uint64_t>(0, words - 1)(Game::rng);
+
+    for(uint64_t i = 0; i < rand; i++) {
+        if(!std::getline(file, word)) {
+            std::cout << "Error loading file\n";
+            file.close();
+            return std::string("X", length);
+        }
     }
     file.close();
 
-    word = matchingWords[rand()%count];
     std::cout << "Guess word: " << word << std::endl;
     return word;
 }

@@ -14,7 +14,6 @@
 #include <map>
 #include <string>
 #include <chrono>
-#include <vector>
 #include <fstream>
 #include <random>
 
@@ -66,6 +65,9 @@ private:
     /// @param language Word language
     /// @param length The length of the word
     static std::string randomWord(std::string language, uint8_t length);
+
+    /// Random number generator
+    static std::mt19937_64 rng;
 };
 
 #endif /* Game_hpp */

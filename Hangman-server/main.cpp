@@ -33,8 +33,6 @@ int main(int argc, const char * argv[]) {
     server.rooms[roomIndex].startGame();
     */
 
-    std::srand ( unsigned ( std::time(0) ) );
-    
     Server server(1234);
 
     return 0;

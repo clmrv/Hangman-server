@@ -9,7 +9,7 @@
 
 PossibleRoomSettings Room::possibleSettings = {
     .languages = { "pl", "us" },
-    .wordLength = { 3, 30 },
+    .wordLength = { 3, 13 },
     .gameTime = { 30, 300 },
     .healthPoints = { 1, 5 },
     .playerCount = { 2, 5 }
