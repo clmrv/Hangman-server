@@ -39,9 +39,9 @@ public:
     /// Get the name of the Player
     std::string getName() const;
 
-    Room* room;
+    Room* room = nullptr;
 
-    Game* game;
+    Game* game = nullptr;
 
 private:
     /// Player nickname

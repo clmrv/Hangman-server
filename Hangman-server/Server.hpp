@@ -38,7 +38,7 @@ public:
     
     
 private:
-    std::unordered_map<int, Player> players;
+    std::unordered_map<uint16_t, Player> players;
     std::unordered_map<std::string, Room> rooms;
     std::vector<Game> games;
 

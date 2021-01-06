@@ -21,7 +21,7 @@ private:
 
 public:
     int fd;
-    Player* player;
+    Player* player = nullptr;
     std::list<Message::In> incoming;
     std::list<Message::Out> outgoing;
 

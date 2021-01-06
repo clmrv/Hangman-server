@@ -11,6 +11,8 @@ Player::Player(uint16_t id) {
     this->id = id;
     // Temporary player name
     this->name = "Player" + std::to_string(id);
+    this->room = nullptr;
+    this->game = nullptr;
 }
 
 void Player::send(Message::Out message) {

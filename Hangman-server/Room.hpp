@@ -77,7 +77,7 @@ private:
     std::set<Player*> players;
 
     /// Player who is the host of the room
-    Player* host;
+    Player* host = nullptr;
 
     /// Settings of this room
     RoomSettings settings;

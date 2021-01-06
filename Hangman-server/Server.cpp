@@ -237,9 +237,16 @@ void Server::disconnect(int fd) {
             }
         }
 
-        // TODO: If player not in game, delete player
-        
+        auto playerIt = players.find(connections[fd].player->id);
+
         connections[fd].player->conn = nullptr;
+
+        // If player not in game, delete player
+        if(!playerIt->second.game) {
+            players.erase(playerIt);
+        }
+        
+
     }
 
     // Remove connection
