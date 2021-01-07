@@ -10,6 +10,7 @@
 
 #include "../Player.hpp"
 #include "Message.hpp"
+#include "../plog/Log.h"
 
 #include <list>
 

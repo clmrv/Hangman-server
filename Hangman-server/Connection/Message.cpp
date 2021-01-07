@@ -40,6 +40,7 @@ bool In::read(int fd) {
 
         // Error reading
         else {
+            PLOGE << "Error reading message from FD: " << fd;
             error = true;
             return true;
         }
@@ -56,6 +57,7 @@ bool In::read(int fd) {
 
         // Error reading
         else {
+            PLOGE << "Error reading message from FD: " << fd;
             error = true;
             return true;
         }
@@ -97,6 +99,7 @@ bool Out::write(int fd) {
     if(n >= 0) {
         written += static_cast<size_t>(n);
     } else {
+        PLOGE << "Error writing message to FD: " << fd;
         error = true;
         return true;
     }

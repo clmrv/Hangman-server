@@ -17,10 +17,10 @@ Room::Room(std::string id, Player* host, RoomSettings& settings) {
     IF_PLOG(plog::verbose) {
         PLOGV << "Room settings:";
         PLOGV << "\tlang: " << settings.language;
-        PLOGV << "\tword length: " << settings.wordLength;
-        PLOGV << "\tgame time: " << settings.gameTime << " seconds";
-        PLOGV << "\thealth points: " << settings.healthPoints;
-        PLOGV << "\tmax players: " << settings.maxPlayers;
+        PLOGV << "\tword length: " << (int)settings.wordLength;
+        PLOGV << "\tgame time: " << (int)settings.gameTime << " seconds";
+        PLOGV << "\thealth points: " << (int)settings.healthPoints;
+        PLOGV << "\tmax players: " << (int)settings.maxPlayers;
     }
 
     updateAll();

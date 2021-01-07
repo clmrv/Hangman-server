@@ -89,7 +89,7 @@ void Server::handleMessages() {
     for(auto& [fd, conn] : connections) {
         if(auto raw = conn.incoming.begin(); raw != conn.incoming.end()) {
 
-            PLOGD << "Connection " << fd << " received message of type 0x" << (int)static_cast<uint8_t>(raw->type);
+            PLOGD << "Connection " << fd << " received message of type 0x" << std::hex << (int)static_cast<uint8_t>(raw->type);
 
             switch(raw->type) {
 
@@ -212,7 +212,7 @@ void Server::handleMessages() {
                     break;
                 }
                 default:
-                    PLOGW << "Message of unknown type: " << (int)static_cast<uint8_t>(raw->type);
+                    PLOGW << "Message of unknown type: " << std::hex << (int)static_cast<uint8_t>(raw->type);
                     break;
             }
             conn.incoming.erase(raw);
@@ -299,8 +299,7 @@ void Server::login(Connection& conn, std::optional<uint16_t> existingID) {
         PLOGD << "Login request from FD: " << conn.fd << " to player #" << *id;
 
         // Find a player with the same ID (and no connection)
-        auto it = players.find(*id);
-        if(it != players.end()) {
+        if(auto it = players.find(*id); it != players.end() && it->second.conn == nullptr) {
             PLOGI << "Login player #" << it->second.id << " to connection with FD: " << conn.fd;
             // Player ID found, assign Player to Connection and Connection to Player
             conn.player = &it->second;
@@ -316,9 +315,11 @@ void Server::login(Connection& conn, std::optional<uint16_t> existingID) {
                 it->second.game->playerReturned(&it->second);
             }
             return;
+        } else {
+            PLOGD << "Player with #" << *id << " not found or already has a connection";
         }
     }
-    PLOGD << "Login request from FD: " << conn.fd;
+    PLOGD << "Login request from FD: " << conn.fd << " - without id";
 
     // Generate unique player ID
     uint16_t rID;
@@ -345,7 +346,7 @@ void Server::joinRoom(Player* player, std::string id) {
         PLOGI << "Player #" << player->id << " joined room " << it->second.id;
         it->second.join(player);
     } else {
-        PLOGI << "Player #" << player->id << " tried to join not-existing room " << it->second.id;
+        PLOGI << "Player #" << player->id << " tried to join not-existing room " << id;
         player->send(Message::error(MessageError::roomNotFound));
     }
 }

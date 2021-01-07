@@ -47,28 +47,28 @@ Config::Config(const char* filename) {
             auto bar = value.find_first_of('-');
             roomSettings.wordLength[0] = std::stoi(value.substr(0, bar));
             roomSettings.wordLength[1] = std::stoi(value.substr(bar + 1));
-            PLOGV << "\tword length: " << roomSettings.wordLength[0] << " - " << roomSettings.wordLength[1];
+            PLOGV << "\tword length: " << (int)roomSettings.wordLength[0] << " - " << (int)roomSettings.wordLength[1];
         }
         else if(key == "gameTime") {
             auto bar = value.find_first_of('-');
             roomSettings.gameTime[0] = std::stoi(value.substr(0, bar));
             roomSettings.gameTime[1] = std::stoi(value.substr(bar + 1));
-            PLOGV << "\tgame time: " << roomSettings.gameTime[0] << " - " << roomSettings.gameTime[1] << " seconds";
+            PLOGV << "\tgame time: " << (int)roomSettings.gameTime[0] << " - " << (int)roomSettings.gameTime[1] << " seconds";
         }
         else if(key == "healthPoints") {
             auto bar = value.find_first_of('-');
             roomSettings.healthPoints[0] = std::stoi(value.substr(0, bar));
             roomSettings.healthPoints[1] = std::stoi(value.substr(bar + 1));
-            PLOGD << "\thealth points: " << roomSettings.healthPoints[0] << " - " << roomSettings.healthPoints[1];
+            PLOGV << "\thealth points: " << (int)roomSettings.healthPoints[0] << " - " << (int)roomSettings.healthPoints[1];
         }
         else if(key == "players") {
             auto bar = value.find_first_of('-');
             roomSettings.playerCount[0] = std::stoi(value.substr(0, bar));
             roomSettings.playerCount[1] = std::stoi(value.substr(bar + 1));
-            PLOGD << "\tplayers: " << roomSettings.playerCount[0] << " - " << roomSettings.playerCount[1];
+            PLOGV << "\tplayers: " << (int)roomSettings.playerCount[0] << " - " << (int)roomSettings.playerCount[1];
         }
         else {
-            PLOGW << "Undefined key udring loading config: '" << key << "'";
+            PLOGV << "Undefined key udring loading config: '" << key << "'";
         }
 
     }

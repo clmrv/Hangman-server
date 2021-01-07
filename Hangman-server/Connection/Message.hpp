@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "MessageType.h"
+#include "../plog/Log.h"
 
 namespace Message {
 
