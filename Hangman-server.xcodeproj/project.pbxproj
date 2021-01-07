@@ -36,6 +36,28 @@
 		010108B8259A2E65006721AD /* OutMessage.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OutMessage.hpp; sourceTree = "<group>"; };
 		010108BD259A311C006721AD /* InMessage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = InMessage.cpp; sourceTree = "<group>"; };
 		010108BE259A311C006721AD /* InMessage.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = InMessage.hpp; sourceTree = "<group>"; };
+		0130532525A7B5E6000A85B8 /* WinApi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WinApi.h; sourceTree = "<group>"; };
+		0130532625A7B5E6000A85B8 /* Severity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Severity.h; sourceTree = "<group>"; };
+		0130532725A7B5E7000A85B8 /* Record.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Record.h; sourceTree = "<group>"; };
+		0130532925A7B5E7000A85B8 /* NativeEOLConverter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NativeEOLConverter.h; sourceTree = "<group>"; };
+		0130532A25A7B5E7000A85B8 /* UTF8Converter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UTF8Converter.h; sourceTree = "<group>"; };
+		0130532C25A7B5E7000A85B8 /* FuncMessageFormatter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FuncMessageFormatter.h; sourceTree = "<group>"; };
+		0130532D25A7B5E7000A85B8 /* TxtFormatter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TxtFormatter.h; sourceTree = "<group>"; };
+		0130532E25A7B5E7000A85B8 /* CsvFormatter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CsvFormatter.h; sourceTree = "<group>"; };
+		0130532F25A7B5E7000A85B8 /* MessageOnlyFormatter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MessageOnlyFormatter.h; sourceTree = "<group>"; };
+		0130533025A7B5E7000A85B8 /* Log.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Log.h; sourceTree = "<group>"; };
+		0130533125A7B5E7000A85B8 /* Util.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
+		0130533225A7B5E7000A85B8 /* Logger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Logger.h; sourceTree = "<group>"; };
+		0130533325A7B5E7000A85B8 /* Init.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Init.h; sourceTree = "<group>"; };
+		0130533525A7B5E7000A85B8 /* ConsoleAppender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConsoleAppender.h; sourceTree = "<group>"; };
+		0130533625A7B5E7000A85B8 /* DebugOutputAppender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DebugOutputAppender.h; sourceTree = "<group>"; };
+		0130533725A7B5E7000A85B8 /* RollingFileAppender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RollingFileAppender.h; sourceTree = "<group>"; };
+		0130533825A7B5E7000A85B8 /* ColorConsoleAppender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ColorConsoleAppender.h; sourceTree = "<group>"; };
+		0130533925A7B5E7000A85B8 /* IAppender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAppender.h; sourceTree = "<group>"; };
+		0130533A25A7B5E7000A85B8 /* AndroidAppender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AndroidAppender.h; sourceTree = "<group>"; };
+		0130533B25A7B5E7000A85B8 /* EventLogAppender.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EventLogAppender.h; sourceTree = "<group>"; };
+		0130533D25A7B5E7000A85B8 /* RollingFileInitializer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RollingFileInitializer.h; sourceTree = "<group>"; };
+		0130533F25A7BDC9000A85B8 /* TxtFormatterEmoji.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TxtFormatterEmoji.h; sourceTree = "<group>"; };
 		0130FB002598A972002D9EB8 /* Connection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Connection.hpp; sourceTree = "<group>"; };
 		0130FB062598C0D4002D9EB8 /* Message.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Message.hpp; sourceTree = "<group>"; };
 		0130FB1F2598F78D002D9EB8 /* Message.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Message.cpp; sourceTree = "<group>"; };
@@ -66,6 +88,67 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0130532425A7B5E6000A85B8 /* plog */ = {
+			isa = PBXGroup;
+			children = (
+				0130532525A7B5E6000A85B8 /* WinApi.h */,
+				0130532625A7B5E6000A85B8 /* Severity.h */,
+				0130532725A7B5E7000A85B8 /* Record.h */,
+				0130532825A7B5E7000A85B8 /* Converters */,
+				0130532B25A7B5E7000A85B8 /* Formatters */,
+				0130533025A7B5E7000A85B8 /* Log.h */,
+				0130533125A7B5E7000A85B8 /* Util.h */,
+				0130533225A7B5E7000A85B8 /* Logger.h */,
+				0130533325A7B5E7000A85B8 /* Init.h */,
+				0130533425A7B5E7000A85B8 /* Appenders */,
+				0130533C25A7B5E7000A85B8 /* Initializers */,
+			);
+			path = plog;
+			sourceTree = "<group>";
+		};
+		0130532825A7B5E7000A85B8 /* Converters */ = {
+			isa = PBXGroup;
+			children = (
+				0130532925A7B5E7000A85B8 /* NativeEOLConverter.h */,
+				0130532A25A7B5E7000A85B8 /* UTF8Converter.h */,
+			);
+			path = Converters;
+			sourceTree = "<group>";
+		};
+		0130532B25A7B5E7000A85B8 /* Formatters */ = {
+			isa = PBXGroup;
+			children = (
+				0130532C25A7B5E7000A85B8 /* FuncMessageFormatter.h */,
+				0130532D25A7B5E7000A85B8 /* TxtFormatter.h */,
+				0130533F25A7BDC9000A85B8 /* TxtFormatterEmoji.h */,
+				0130532E25A7B5E7000A85B8 /* CsvFormatter.h */,
+				0130532F25A7B5E7000A85B8 /* MessageOnlyFormatter.h */,
+			);
+			path = Formatters;
+			sourceTree = "<group>";
+		};
+		0130533425A7B5E7000A85B8 /* Appenders */ = {
+			isa = PBXGroup;
+			children = (
+				0130533525A7B5E7000A85B8 /* ConsoleAppender.h */,
+				0130533625A7B5E7000A85B8 /* DebugOutputAppender.h */,
+				0130533725A7B5E7000A85B8 /* RollingFileAppender.h */,
+				0130533825A7B5E7000A85B8 /* ColorConsoleAppender.h */,
+				0130533925A7B5E7000A85B8 /* IAppender.h */,
+				0130533A25A7B5E7000A85B8 /* AndroidAppender.h */,
+				0130533B25A7B5E7000A85B8 /* EventLogAppender.h */,
+			);
+			path = Appenders;
+			sourceTree = "<group>";
+		};
+		0130533C25A7B5E7000A85B8 /* Initializers */ = {
+			isa = PBXGroup;
+			children = (
+				0130533D25A7B5E7000A85B8 /* RollingFileInitializer.h */,
+			);
+			path = Initializers;
+			sourceTree = "<group>";
+		};
 		0130FB042598C0AA002D9EB8 /* Connection */ = {
 			isa = PBXGroup;
 			children = (
@@ -111,6 +194,7 @@
 				CA0C7B3F2592880B00BF532F /* Server.cpp */,
 				CA0C7B402592880B00BF532F /* Server.hpp */,
 				018AEBD425A5F51A00162C92 /* Config.cpp */,
+				0130532425A7B5E6000A85B8 /* plog */,
 				018AEBD525A5F51A00162C92 /* Config.hpp */,
 				0130FB042598C0AA002D9EB8 /* Connection */,
 			);
