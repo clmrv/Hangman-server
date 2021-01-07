@@ -193,9 +193,9 @@
 				CA0C7B4425928FB300BF532F /* Game.hpp */,
 				CA0C7B3F2592880B00BF532F /* Server.cpp */,
 				CA0C7B402592880B00BF532F /* Server.hpp */,
+				018AEBD525A5F51A00162C92 /* Config.hpp */,
 				018AEBD425A5F51A00162C92 /* Config.cpp */,
 				0130532425A7B5E6000A85B8 /* plog */,
-				018AEBD525A5F51A00162C92 /* Config.hpp */,
 				0130FB042598C0AA002D9EB8 /* Connection */,
 			);
 			path = "Hangman-server";

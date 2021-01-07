@@ -28,6 +28,8 @@ Game::Game(RoomSettings& settings, std::set<Player*>& players) {
     std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
     this->word = conv.from_bytes(utf8word);
 
+    PLOGI << "Creating game with word '" << utf8word << "'";
+
     // Start and end time of the game
     this->startTime = std::chrono::system_clock::now();
     this->endTime = this->startTime + std::chrono::seconds(settings.gameTime);
@@ -35,6 +37,7 @@ Game::Game(RoomSettings& settings, std::set<Player*>& players) {
     // Make word with no guesses
     std::u32string emptyWord(settings.wordLength, '\0');
 
+    PLOGV << "Players (" << players.size() << "):";
     // Insert all players and set game
     for(const auto& player : players) {
         this->players.insert(std::make_pair(player, PlayerInGame {
@@ -44,6 +47,7 @@ Game::Game(RoomSettings& settings, std::set<Player*>& players) {
             emptyWord,              // Empty word
             false                   // Guessed word
         }));
+        PLOGV << "\t#" << player->id << " - " << player->getName();
     }
 }
 
@@ -61,6 +65,7 @@ bool Game::operator==(const Game &other) {
 }
 
 void Game::setupPlayers() {
+    PLOGV << "Setting up players";
     for(auto& [player, inGame] : players) {
         player->game = this;
     }
@@ -68,6 +73,7 @@ void Game::setupPlayers() {
 }
 
 void Game::teardownPlayers() {
+    PLOGV << "Setting no game to all players";
     for(auto& [player, inGame] : players) {
         player->game = nullptr;
     }
@@ -88,18 +94,20 @@ std::string Game::randomWord(std::string language, uint8_t length) {
 
     for(uint64_t i = 0; i < rand; i++) {
         if(!std::getline(file, word)) {
-            std::cout << "Error loading file\n";
+            PLOGE << "Error loading file for language '" << language << "' with the length of " << length;
             file.close();
             return std::string("X", length);
         }
     }
     file.close();
 
-    std::cout << "Guess word: " << word << std::endl;
+    PLOGV << "Random word in language '" << language << "' with the length of " << length << " is: " << word;
     return word;
 }
 
 void Game::sendGameStatus() {
+
+    PLOGV << "Sending game status to all players";
 
     // Get epoch end time
     auto epoch = std::chrono::duration_cast<std::chrono::seconds>(endTime.time_since_epoch()).count();
@@ -114,6 +122,8 @@ void Game::sendGameStatus() {
 }
 
 void Game::sendScoreboard() {
+
+    PLOGV << "Sending scoreboard to all players";
 
     std::vector<PlayerInGame> sorted;
     sorted.reserve(players.size());
@@ -142,6 +152,7 @@ bool Game::loop() {
 
     // If time is up, finish the game
     if(remaining <= 0) {
+        PLOGD << "Time is up, finishing the game";
         sendScoreboard();
         teardownPlayers();
         return true;
@@ -157,6 +168,7 @@ bool Game::loop() {
                                  }) == players.end();
 
     if(finished) {
+        PLOGD << "All players finished, finishing the game";
         sendScoreboard();
         teardownPlayers();
     }
@@ -165,6 +177,8 @@ bool Game::loop() {
 }
 
 void Game::playerReturned(Player* player) {
+
+    PLOGD << "Player #" << player->id << " returned to the game";
 
     // Get epoch end time
     auto epoch = std::chrono::duration_cast<std::chrono::seconds>(endTime.time_since_epoch()).count();
@@ -179,6 +193,10 @@ void Game::playerReturned(Player* player) {
 bool Game::guessWord(Player *player, std::u32string &word) {
     PlayerInGame& p = players[player];
 
+    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+    std::string utf8word = conv.to_bytes(word);
+    PLOGI << "Player #" << player->id << " is trying to guess the word '" << utf8word << "'";
+
     // If player hasn't guessed yet and has health left
     if(!p.guessed && p.health > 0) {
 
@@ -186,6 +204,7 @@ bool Game::guessWord(Player *player, std::u32string &word) {
         if(word == this->word) {
             p.guessed = true;
             p.word = word;
+            PLOGI << "Player #" << player->id << " correctly guessed the word '" << utf8word << "'";
 
             auto duration = std::chrono::duration_cast<std::chrono::seconds>(endTime - startTime).count();
             auto remaining = std::chrono::duration_cast<std::chrono::seconds>(endTime - std::chrono::system_clock::now()).count();
@@ -200,17 +219,22 @@ bool Game::guessWord(Player *player, std::u32string &word) {
             // 0.0 - none letters were missing
             double lettersPercentage = (double)missingLetters / (double)p.word.size();
 
+            PLOGD << "Player #" << player->id << ": points: " << p.points << ", time%: " << timePercentage
+                  << ", missing letters: " << missingLetters << ", letters%: " << lettersPercentage;
+
             // TODO: Better calculate points
             // ???
             p.points += 1000;
             p.points += timePercentage * 2000;
             p.points += missingLetters * 30;        // 20 pts when guessing each letter separately
             p.points += lettersPercentage * 100;
+            PLOGD << "Player #" << player->id << ": points: " << p.points;
         }
 
         // Player made a wrong guess
         else {
             p.health -= 1;
+            PLOGI << "Player #" << player->id << " failed to guessed the word '" << utf8word << "'";
         }
     }
 
@@ -224,6 +248,7 @@ bool Game::guessWord(Player *player, std::u32string &word) {
 
     // Send a message to all the players
     if(finished) {
+        PLOGD << "All players finished, finishing the game";
         sendScoreboard();
         teardownPlayers();
     } else {
@@ -236,6 +261,8 @@ bool Game::guessWord(Player *player, std::u32string &word) {
 bool Game::guessLetter(Player *player, char32_t &letter) {
     PlayerInGame& p = players[player];
 
+    PLOGI << "Player #" << player->id << " is trying to guess the letter '" << letter << "'";
+
     // If player hasn't guessed yet and has health left
     if(!p.guessed && p.health > 0) {
 
@@ -244,6 +271,7 @@ bool Game::guessLetter(Player *player, char32_t &letter) {
 
             // Player correctly guessed the letter
             if(word.find(letter) != std::u32string::npos) {
+                PLOGI << "Player #" << player->id << " correctly guessed the letter '" << letter << "'";
 
                 uint8_t count = 0;
                 for(int i = 0; i < word.size(); i++) {
@@ -291,6 +319,7 @@ bool Game::guessLetter(Player *player, char32_t &letter) {
         else {
             // TODO: Health?
             p.health -= 1;
+            PLOGI << "Player #" << player->id << " failed to guessed the letter '" << letter << "'";
         }
     }
 
@@ -304,6 +333,7 @@ bool Game::guessLetter(Player *player, char32_t &letter) {
 
     // Send a message to all the players
     if(finished) {
+        PLOGD << "All players finished, finishing the game";
         sendScoreboard();
         teardownPlayers();
     } else {

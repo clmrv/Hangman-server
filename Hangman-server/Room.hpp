@@ -17,6 +17,7 @@
 
 #include "Player.hpp"
 #include "Game.hpp"
+#include "plog/Log.h"
 
 class Game;
 
@@ -68,9 +69,6 @@ public:
     /// Starts a game
     /// @note The room can now be deleted
     Game start();
-    
-    // DEBUG
-    void printPlayers();
     
 private:
     /// Players currently in the room

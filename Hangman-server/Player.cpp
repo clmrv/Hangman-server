@@ -13,6 +13,7 @@ Player::Player(uint16_t id) {
     this->name = "Player" + std::to_string(id);
     this->room = nullptr;
     this->game = nullptr;
+    PLOGI << "Creating player #" << id << " - " << this->name;
 }
 
 void Player::send(Message::Out message) {
@@ -22,8 +23,10 @@ void Player::send(Message::Out message) {
 }
 
 void Player::setName(std::string name) {
-    if(!name.empty())
+    if(!name.empty()) {
+        PLOGI << "Changing name of player #" << id << " from '" << this->name << "' to '" << name << "'";
         this->name = name;
+    }
 }
 
 

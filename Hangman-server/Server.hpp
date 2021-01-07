@@ -14,6 +14,7 @@
 #include "Connection/Connection.hpp"
 #include "Connection/OutMessage.hpp"
 #include "Connection/InMessage.hpp"
+#include "plog/Log.h"
 
 #include <unistd.h>
 #include <poll.h>

@@ -32,16 +32,6 @@ void push_back_uint16(std::vector<uint8_t>& vec, uint16_t value) {
     vec.push_back(uint8_t(value & 0x00ff));
 }
 
-//
-// DEBUG
-//
-//void printData(std::vector<uint8_t>& data) {
-//    for(const auto& d : data) {
-//        printf("%x ", d);
-//    }
-//    printf("\n");
-//}
-
 
 Out Message::loggedIn(uint16_t id) {
 

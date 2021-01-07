@@ -12,6 +12,7 @@
 #include <sstream>
 #include <fstream>
 #include "Room.hpp"
+#include "plog/Log.h"
 
 
 /// Server configuration

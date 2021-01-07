@@ -12,6 +12,7 @@
 #include <string>
 #include "Connection/Connection.hpp"
 #include "Connection/OutMessage.hpp"
+#include "plog/Log.h"
 
 class Room;
 class Game;

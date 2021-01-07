@@ -9,10 +9,12 @@
 
 Config::Config(const char* filename) {
 
+    PLOGD << "Reading config from file '" << filename << "'";
+
     std::ifstream file(filename);
 
     if(!file.good()) {
-        std::cout << "Error opening config file '" << filename << "'\n";
+        PLOGE << "Error opening file " << filename << ", using default settings";
         return;
     }
 
@@ -25,6 +27,7 @@ Config::Config(const char* filename) {
 
         if(key == "port") {
             port = std::stoi(value);
+            PLOGV << "\tport: " << port;
         }
         else if(key == "langs") {
 
@@ -33,8 +36,10 @@ Config::Config(const char* filename) {
             std::istringstream iss(value);
             std::string lang;
             while(getline(iss, lang, ',')) {
-                if(lang.size() == 2)
+                if(lang.size() == 2) {
                     roomSettings.languages.push_back(lang);
+                    PLOGV << "\tlang: " << lang;
+                }
             }
 
         }
@@ -42,24 +47,28 @@ Config::Config(const char* filename) {
             auto bar = value.find_first_of('-');
             roomSettings.wordLength[0] = std::stoi(value.substr(0, bar));
             roomSettings.wordLength[1] = std::stoi(value.substr(bar + 1));
+            PLOGV << "\tword length: " << roomSettings.wordLength[0] << " - " << roomSettings.wordLength[1];
         }
         else if(key == "gameTime") {
             auto bar = value.find_first_of('-');
             roomSettings.gameTime[0] = std::stoi(value.substr(0, bar));
             roomSettings.gameTime[1] = std::stoi(value.substr(bar + 1));
+            PLOGV << "\tgame time: " << roomSettings.gameTime[0] << " - " << roomSettings.gameTime[1] << " seconds";
         }
         else if(key == "healthPoints") {
             auto bar = value.find_first_of('-');
             roomSettings.healthPoints[0] = std::stoi(value.substr(0, bar));
             roomSettings.healthPoints[1] = std::stoi(value.substr(bar + 1));
+            PLOGD << "\thealth points: " << roomSettings.healthPoints[0] << " - " << roomSettings.healthPoints[1];
         }
         else if(key == "players") {
             auto bar = value.find_first_of('-');
             roomSettings.playerCount[0] = std::stoi(value.substr(0, bar));
             roomSettings.playerCount[1] = std::stoi(value.substr(bar + 1));
+            PLOGD << "\tplayers: " << roomSettings.playerCount[0] << " - " << roomSettings.playerCount[1];
         }
         else {
-            std::cout << "Undefined key during loading config: '" << key << "'\n";
+            PLOGW << "Undefined key udring loading config: '" << key << "'";
         }
 
     }

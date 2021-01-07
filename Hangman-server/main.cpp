@@ -6,6 +6,10 @@
 //
 
 #include <iostream>
+#include "plog/Log.h"
+#include "plog/Initializers/RollingFileInitializer.h"
+#include "plog/Appenders/RollingFileAppender.h"
+#include "plog/Appenders/ConsoleAppender.h"
 #include "Server.hpp"
 #include "Connection/Connection.hpp"
 
@@ -32,6 +36,10 @@ int main(int argc, const char * argv[]) {
     
     server.rooms[roomIndex].startGame();
     */
+
+    static plog::RollingFileAppender<plog::TxtFormatterEmoji> fileAppender("data.log", 1000000, 1);
+    static plog::ConsoleAppender<plog::TxtFormatterEmoji> consoleAppender;
+    plog::init(plog::debug, &fileAppender).addAppender(&consoleAppender);
 
     Server server(1234);
 

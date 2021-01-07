@@ -9,6 +9,7 @@
 #define Game_hpp
 
 #include "Room.hpp"
+#include "plog/Log.h"
 
 #include <set>
 #include <map>

@@ -11,7 +11,7 @@
 Server::Server(int port): config("config") {    
     newConnectionSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (newConnectionSocket == -1) {
-        printf("socked failed\n");
+        PLOGE << "Socket failed";
         return;
     }
     const int one = 1;
@@ -22,11 +22,12 @@ Server::Server(int port): config("config") {
     servAddr.sin_port = htons(config.port);
     servAddr.sin_addr.s_addr = INADDR_ANY;
     if (bind(newConnectionSocket, (sockaddr*)&servAddr, sizeof(servAddr) ) == -1) {
-        printf("Binding failed: %d\n", errno);
+        PLOGE << "Binding failed: " << errno;
         return;
     }
 
     listen(newConnectionSocket, 5);     // second arg - how many can wait to be accepted (in queue)
+    PLOGD << "Listening on port " << config.port;
     this->eventLoop();
 }
 
@@ -87,6 +88,9 @@ void Server::eventLoop() {
 void Server::handleMessages() {
     for(auto& [fd, conn] : connections) {
         if(auto raw = conn.incoming.begin(); raw != conn.incoming.end()) {
+
+            PLOGD << "Connection " << fd << " received message of type 0x" << (int)static_cast<uint8_t>(raw->type);
+
             switch(raw->type) {
 
                 // Login
@@ -102,6 +106,8 @@ void Server::handleMessages() {
                     if(conn.player) {
                         Message::setName msg(*raw);
                         conn.player->setName(msg.name);
+                    } else {
+                        PLOGW << "No player, but received 'setName' message";
                     }
                     break;
                 }
@@ -111,6 +117,8 @@ void Server::handleMessages() {
                     if(conn.player) {
                         Message::joinRoom msg(*raw);
                         joinRoom(conn.player, msg.id);
+                    } else {
+                        PLOGW << "No player, but received 'joinRoom' message";
                     }
                     break;
                 }
@@ -120,6 +128,8 @@ void Server::handleMessages() {
                     if(conn.player) {
                         Message::createRoom msg(*raw);
                         createRoom(conn.player, msg.settings);
+                    } else {
+                        PLOGW << "No player, but received 'createRoom' message";
                     }
                     break;
                 }
@@ -129,6 +139,8 @@ void Server::handleMessages() {
                     if(conn.player && conn.player->room) {
                         Message::setNewHost msg(*raw);
                         conn.player->room->setNewHost(conn.player, msg.id);
+                    } else {
+                        PLOGW << "No player, but received 'setNewHost' message";
                     }
                     break;
                 }
@@ -138,6 +150,8 @@ void Server::handleMessages() {
                     if(conn.player && conn.player->room) {
                         Message::kickPlayer msg(*raw);
                         conn.player->room->kick(conn.player, msg.id);
+                    } else {
+                        PLOGW << "No player or player not in room, but received 'kickPlayer' message";
                     }
                     break;
                 }
@@ -150,6 +164,8 @@ void Server::handleMessages() {
                             // Empty room - delete
                             rooms.erase(room.id);
                         }
+                    } else {
+                        PLOGW << "No player or player not in room, but received 'leaveRoom' message";
                     }
                     break;
                 }
@@ -158,6 +174,8 @@ void Server::handleMessages() {
                 {
                     if(conn.player && conn.player->room) {
                         startGame(*conn.player->room);
+                    } else {
+                        PLOGW << "No player or player not in room, but received 'startGame' message";
                     }
                     break;
                 }
@@ -169,8 +187,11 @@ void Server::handleMessages() {
                         Game& game = *conn.player->game;
                         if(game.guessWord(conn.player, msg.word)) {
                             // Game finished - can delete
+                            PLOGD << "Game finished - deleting";
                             games.erase(std::remove_if(games.begin(), games.end(), [&game] (const Game& g) { return game == g; }));
                         }
+                    } else {
+                        PLOGW << "No player or player not in game, but received 'guessWord' message";
                     }
                     break;
                 }
@@ -182,13 +203,17 @@ void Server::handleMessages() {
                         Game& game = *conn.player->game;
                         if(game.guessLetter(conn.player, msg.letter)) {
                             // Game finished - can delete
+                            PLOGD << "Game finished - deleting";
                             games.erase(std::remove_if(games.begin(), games.end(), [&game] (const Game& g) { return game == g; }));
                         }
+                    } else {
+                        PLOGW << "No player or player not in room, but received 'guessLetter' message";
                     }
                     break;
                 }
                 default:
-                    printf("Got message of unimplemented type: %d\n", static_cast<uint8_t>(raw->type));
+                    PLOGW << "Message of unknown type: " << (int)static_cast<uint8_t>(raw->type);
+                    break;
             }
             conn.incoming.erase(raw);
         }
@@ -200,6 +225,7 @@ void Server::handleGames() {
     for(auto it = games.begin(); it != games.end(); ) {
         if(it->loop()) {
             // Delete game when finished
+            PLOGD << "Game finished - deleting";
             it = games.erase(it);
         } else {
             it++;
@@ -219,20 +245,22 @@ void Server::connect() {
     // Create new event
     events.push_back({ fd, POLLIN | POLLHUP });
 
-    printf("Connected: %s, fd: %d, read_event: %lu\n",
-           inet_ntoa(socket.sin_addr), fd, connections.size());
-
+    PLOGI << "Connected IP: " << inet_ntoa(socket.sin_addr) << ", FD: " << fd << ", connections: " << connections.size();
 }
 
 void Server::disconnect(int fd) {
 
     // Remove reference to Connection from Player
     if(connections[fd].player) {
+        PLOGI << "Disconnect player #" << connections[fd].player->id
+              << ", NAME: " << connections[fd].player->getName() << ", FD: " << fd;
 
         // Remove player from room
         if(connections[fd].player->room) {
+            PLOGD << "Removing player #" << connections[fd].player->id << " from room " << connections[fd].player->room->id;
             std::string roomID = connections[fd].player->room->id;
             if(connections[fd].player->room->leave(connections[fd].player)) {
+                PLOGD << "Deleting room " << roomID << " - was empty";
                 rooms.erase(roomID);
             }
         }
@@ -243,10 +271,13 @@ void Server::disconnect(int fd) {
 
         // If player not in game, delete player
         if(!playerIt->second.game) {
+            PLOGD << "Deleting player #" << playerIt->second.id;
             players.erase(playerIt);
         }
         
 
+    } else {
+        PLOGI << "Disconnect player FD: " << fd;
     }
 
     // Remove connection
@@ -255,7 +286,7 @@ void Server::disconnect(int fd) {
     // Remove event
     events.erase(std::remove_if(events.begin(), events.end(), [fd] (const pollfd& p) { return p.fd == fd; } ), events.end());
 
-    printf("Disconnected: fd: %d\n", fd);
+    PLOGV << "Deleted player FD: " << fd;
 }
 
 
@@ -265,10 +296,12 @@ void Server::login(Connection& conn, std::optional<uint16_t> existingID) {
 
     // Login existing Player
     if(auto id = existingID) {
+        PLOGD << "Login request from FD: " << conn.fd << " to player #" << *id;
 
         // Find a player with the same ID (and no connection)
         auto it = players.find(*id);
         if(it != players.end()) {
+            PLOGI << "Login player #" << it->second.id << " to connection with FD: " << conn.fd;
             // Player ID found, assign Player to Connection and Connection to Player
             conn.player = &it->second;
             it->second.conn = &conn;
@@ -279,11 +312,13 @@ void Server::login(Connection& conn, std::optional<uint16_t> existingID) {
 
             // Send a message if the player returned
             if(it->second.game) {
+                PLOGD << "Player #" << it->second.id << " is in game";
                 it->second.game->playerReturned(&it->second);
             }
             return;
         }
     }
+    PLOGD << "Login request from FD: " << conn.fd;
 
     // Generate unique player ID
     uint16_t rID;
@@ -292,7 +327,7 @@ void Server::login(Connection& conn, std::optional<uint16_t> existingID) {
         rID = dist(generator);
     } while(players.find(rID) != players.end());
 
-    printf("Random player id: %u\n", rID);
+    PLOGI << "Logged in player with random ID: " << rID;
 
     // Create new Player and login
     auto it = players.emplace(rID, rID);
@@ -307,8 +342,10 @@ void Server::login(Connection& conn, std::optional<uint16_t> existingID) {
 // Join a room
 void Server::joinRoom(Player* player, std::string id) {
     if(auto it = rooms.find(id); it != rooms.end()) {
+        PLOGI << "Player #" << player->id << " joined room " << it->second.id;
         it->second.join(player);
     } else {
+        PLOGI << "Player #" << player->id << " tried to join not-existing room " << it->second.id;
         player->send(Message::error(MessageError::roomNotFound));
     }
 }
@@ -325,18 +362,18 @@ void Server::createRoom(Player* player, RoomSettings& settings) {
         id = {dist(generator), dist(generator), dist(generator), dist(generator), dist(generator), dist(generator)};
     } while (rooms.find(id) != rooms.end());
 
-    printf("Generated room id: %s\n", id.c_str());
-
     // Create the new room and assign a pointer to it to the player
     auto [newRoom, _] = rooms.emplace(std::make_pair(id, Room(id, player, settings)));
     player->room = &newRoom->second;
-    
+
+    PLOGI << "Player #" << player->id << " created room " << id;
 }
 
 // Start a game
 void Server::startGame(Room& room) {
     auto game = games.insert(games.end(), room.start());
     game->setupPlayers();
+    PLOGI << "Game from room " << room.id << " started.";
     rooms.erase(room.id);
 }
 
@@ -344,12 +381,5 @@ void Server::startGame(Room& room) {
 Server::~Server() {
     shutdown(newConnectionSocket, SHUT_RDWR);
     close(newConnectionSocket);
-    
-    
-    /*
-     wyczyscic wszystko
-     - vector players
-     - vector rooms
-     
-     */
+    PLOGD << "Shutdown server";
 }
