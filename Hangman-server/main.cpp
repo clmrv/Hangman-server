@@ -22,7 +22,7 @@ int main(int argc, const char * argv[]) {
     plog::init(plog::verbose, &fileAppender).addAppender(&consoleAppender);
 
     // Initialize a server
-    Server server(1234);
+    Server server;
 
     return 0;
 }

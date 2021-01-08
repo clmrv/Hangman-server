@@ -274,7 +274,7 @@ bool Game::guessLetter(Player *player, char32_t &letter) {
                 PLOGI << "Player #" << player->id << " correctly guessed the letter '" << letter << "'";
 
                 uint8_t count = 0;
-                for(int i = 0; i < word.size(); i++) {
+                for(unsigned int i = 0; i < word.size(); i++) {
                     if(word[i] == letter) {
                         p.word[i] = letter;
                         p.points += 20;         // 20 pts for each letter occurence

@@ -28,15 +28,14 @@
 class Server {
 public:
     
-    Server(int port);
+    Server();
 
     /// Creates a room
     /// @param host Player that will be the host
     /// @return Index of the room
     int createRoom(Player* host);
     
-    ~Server(); 
-    
+    ~Server();
     
 private:
     std::unordered_map<uint16_t, Player> players;

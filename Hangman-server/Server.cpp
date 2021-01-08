@@ -8,7 +8,7 @@
 #include "Server.hpp"
 #include "Connection/Message.hpp"
 
-Server::Server(int port): config("config") {    
+Server::Server(): config("config") {
     newConnectionSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (newConnectionSocket == -1) {
         PLOGE << "Socket failed";
