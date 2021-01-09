@@ -68,6 +68,9 @@ private:
     /// Guessed word
     std::u32string word;
 
+    /// Max player health
+    uint8_t maxHealth;
+
     /// Game start time
     std::chrono::time_point<std::chrono::system_clock> startTime;
 

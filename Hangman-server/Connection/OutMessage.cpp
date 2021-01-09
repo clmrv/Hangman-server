@@ -134,7 +134,7 @@ Out gameStatusBuilder::build() {
     return Out(MessageType::gameStatus, data);
 }
 
-Out Message::scoreboard(std::vector<PlayerInGame>& players) {
+Out Message::scoreboard(std::vector<PlayerInGame>& players, const std::u32string& word) {
     std::vector<uint8_t> data;
 
     data.push_back(players.size());
@@ -145,7 +145,17 @@ Out Message::scoreboard(std::vector<PlayerInGame>& players) {
         data.push_back(name.size());
         data.insert(data.end(), name.begin(), name.end());
         push_back_uint16(data, player.points);
+        data.push_back(player.guessed ? 1 : 0);
     }
+
+    data.push_back(word.size());
+
+    std::vector<uint8_t> raw;
+    raw.reserve(word.size() * 4);
+    for(const auto& letter : word) {
+        push_back_uint32(raw, letter);
+    }
+    data.insert(data.end(), raw.begin(), raw.end());
 
     return Out(MessageType::scoreBoard, data);
 }

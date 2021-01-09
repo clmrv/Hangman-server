@@ -30,6 +30,9 @@ Game::Game(RoomSettings& settings, std::set<Player*>& players) {
 
     PLOGI << "Creating game with word '" << utf8word << "'";
 
+    // Remember player maximum health
+    this->maxHealth = settings.healthPoints;
+
     // Start and end time of the game
     this->startTime = std::chrono::system_clock::now();
     this->endTime = this->startTime + std::chrono::seconds(settings.gameTime);
@@ -135,7 +138,7 @@ void Game::sendScoreboard() {
     std::sort(sorted.begin(), sorted.end(), std::greater<>());
 
     // Create 'scoreboard' message
-    Message::Out msg = Message::scoreboard(sorted);
+    Message::Out msg = Message::scoreboard(sorted, word);
 
     // Send message to every player
     for(const auto& [player, inGame] : players) {
@@ -228,6 +231,7 @@ bool Game::guessWord(Player *player, std::u32string &word) {
             p.points += timePercentage * 2000;
             p.points += missingLetters * 30;        // 20 pts when guessing each letter separately
             p.points += lettersPercentage * 100;
+            p.points += ((double)p.health / (double)maxHealth) * 1000.0;    // Percent of remaining health * 1000
             PLOGD << "Player #" << player->id << ": points: " << p.points;
         }
 
@@ -304,6 +308,7 @@ bool Game::guessLetter(Player *player, char32_t &letter) {
                     p.points += timePercentage * 2000;
                     p.points += count * 10;                 // 20 pts when guessing each letter separately
                     p.points += lettersPercentage * 100;
+                    p.points += ((double)p.health / (double)maxHealth) * 1000.0;    // Percent of remaining health * 1000
 
                 }
             }

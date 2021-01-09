@@ -52,7 +52,7 @@ public:
 };
 
 /// Create 'scoreBoard' message
-Out scoreboard(std::vector<PlayerInGame>& players);
+Out scoreboard(std::vector<PlayerInGame>& players, const std::u32string& word);
 
 }
 

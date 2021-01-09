@@ -105,3 +105,6 @@ wąży
     - 1 bajt - długość
     - długość * bajt - nazwa 
     - 2 bajt - punkty
+    - 1 bajt - czy odgadnął hasło
+- 1 bajt - długość słowa w (ilość liter - każda litera w UTF-32 ma 4 bajty)
+- 4 * w bajtów - litery słowa w UTF-32
