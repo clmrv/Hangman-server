@@ -2,7 +2,7 @@
 //  Game.cpp
 //  Hangman-server
 //
-//  Created by celmer on 22/12/2020.
+//  Created by Przemysław Ambroży and Błażej Celmer on 22/12/2020.
 //
 
 #include "Game.hpp"
@@ -225,8 +225,6 @@ bool Game::guessWord(Player *player, std::u32string &word) {
             PLOGD << "Player #" << player->id << ": points: " << p.points << ", time%: " << timePercentage
                   << ", missing letters: " << missingLetters << ", letters%: " << lettersPercentage;
 
-            // TODO: Better calculate points
-            // ???
             p.points += 1000;
             p.points += timePercentage * 2000;
             p.points += missingLetters * 30;        // 20 pts when guessing each letter separately
@@ -302,8 +300,6 @@ bool Game::guessLetter(Player *player, char32_t &letter) {
                     // 0.0 - none letters were missing
                     double lettersPercentage = (double)count / (double)p.word.size();
 
-                    // TODO: Better calculate points
-                    // ???
                     p.points += 1000;
                     p.points += timePercentage * 2000;
                     p.points += count * 10;                 // 20 pts when guessing each letter separately
@@ -322,7 +318,6 @@ bool Game::guessLetter(Player *player, char32_t &letter) {
 
         // Player already has this letter
         else {
-            // TODO: Health?
             p.health -= 1;
             PLOGI << "Player #" << player->id << " failed to guessed the letter '" << letter << "'";
         }

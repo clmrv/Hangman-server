@@ -2,7 +2,7 @@
 //  MessageType.h
 //  Hangman-server
 //
-//  Created by Przemek Ambroży on 27/12/2020.
+//  Created by Przemysław Ambroży and Błażej Celmer on 27/12/2020.
 //
 
 #ifndef MessageType_h

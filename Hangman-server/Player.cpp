@@ -2,7 +2,7 @@
 //  Player.cpp
 //  Hangman-server
 //
-//  Created by celmer on 22/12/2020.
+//  Created by Przemysław Ambroży and Błażej Celmer on 22/12/2020.
 //
 
 #include "Player.hpp"
@@ -28,9 +28,6 @@ void Player::setName(std::string name) {
         this->name = name;
     }
 }
-
-
-// DEBUG
 
 std::string Player::getName() const {
     return this->name;

@@ -2,7 +2,7 @@
 //  InMessage.hpp
 //  Hangman-server
 //
-//  Created by Przemek Ambroży on 27/12/2020.
+//  Created by Przemysław Ambroży and Błażej Celmer on 27/12/2020.
 //
 
 #ifndef Message_h

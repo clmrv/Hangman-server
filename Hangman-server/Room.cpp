@@ -2,7 +2,7 @@
 //  Room.cpp
 //  Hangman-server
 //
-//  Created by celmer on 22/12/2020.
+//  Created by Przemysław Ambroży and Błażej Celmer on 22/12/2020.
 //
 
 #include "Room.hpp"

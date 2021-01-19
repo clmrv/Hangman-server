@@ -2,7 +2,7 @@
 //  OutMessage.h
 //  Hangman-server
 //
-//  Created by Przemek Ambroży on 28/12/2020.
+//  Created by Przemysław Ambroży and Błażej Celmer on 28/12/2020.
 //
 
 #ifndef OutMessage_h

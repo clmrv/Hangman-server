@@ -2,7 +2,7 @@
 //  Config.cpp
 //  Hangman-server
 //
-//  Created by Przemek Ambroży on 06/01/2021.
+//  Created by Przemysław Ambroży and Błażej Celmer on 06/01/2021.
 //
 
 #include "Config.hpp"
