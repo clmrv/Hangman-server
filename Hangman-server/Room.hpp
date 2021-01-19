@@ -48,6 +48,10 @@ public:
     /// @param host Player creating the room
     /// @param settings Settings of the room
     Room(std::string id, Player* host, RoomSettings& settings);
+
+
+    /// Whether the player can join the room
+    bool canJoin();
     
     /// Join the room
     void join(Player* player);

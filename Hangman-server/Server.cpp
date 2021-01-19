@@ -343,8 +343,13 @@ void Server::login(Connection& conn, std::optional<uint16_t> existingID) {
 // Join a room
 void Server::joinRoom(Player* player, std::string id) {
     if(auto it = rooms.find(id); it != rooms.end()) {
-        PLOGI << "Player #" << player->id << " joined room " << it->second.id;
-        it->second.join(player);
+        if(it->second.canJoin()) {
+            PLOGI << "Player #" << player->id << " joined room " << it->second.id;
+            it->second.join(player);
+        } else {
+            PLOGI << "Player #" << player->id << " tried to join full room " << it->second.id;
+            player->send(Message::error(MessageError::roomFull));
+        }
     } else {
         PLOGI << "Player #" << player->id << " tried to join not-existing room " << id;
         player->send(Message::error(MessageError::roomNotFound));

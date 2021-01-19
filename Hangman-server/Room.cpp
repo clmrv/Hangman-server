@@ -26,6 +26,10 @@ Room::Room(std::string id, Player* host, RoomSettings& settings) {
     updateAll();
 }
 
+bool Room::canJoin() {
+    return players.size() < settings.maxPlayers;
+}
+
 void Room::join(Player* player) {
     this->players.insert(player);
     player->room = this;
