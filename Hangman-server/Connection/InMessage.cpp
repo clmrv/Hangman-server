@@ -15,7 +15,7 @@ uint16_t big_endian(const uint8_t& first, const uint8_t& second) {
 }
 
 uint32_t big_endian(const uint8_t& first, const uint8_t& second, const uint8_t& third, const uint8_t& fourth) {
-    return (((uint32_t)first) << 14) | (((uint32_t)second) << 16) | (((uint32_t)third) << 8) | ((uint32_t)fourth);
+    return (((uint32_t)first) << 24) | (((uint32_t)second) << 16) | (((uint32_t)third) << 8) | ((uint32_t)fourth);
 }
 
 login::login(const In& message) {
