@@ -55,6 +55,15 @@ void Server::eventLoop() {
                     // Disconnect
                     if(event.revents & POLLHUP) {
                         disconnect(event.fd);
+                        PLOGI << "Connection with fd " << event.fd << " disconnected";
+                        continue;
+                    }
+
+                    // Error
+                    if(event.revents & POLLERR) {
+                        disconnect(event.fd);
+                        PLOGW << "Connection with fd " << event.fd << " error";
+                        continue;
                     }
 
                     // Read from connection
@@ -63,12 +72,20 @@ void Server::eventLoop() {
                             connections[event.fd].read();
                         } catch (const std::exception& e) {
                             disconnect(event.fd);
+                            PLOGW << "Connection with fd " << event.fd << " reading error";
+                            continue;
                         }
                     }
 
                     // Write to connection
                     if(event.revents & POLLOUT) {
-                        connections[event.fd].write();
+                        try {
+                            connections[event.fd].write();
+                        } catch (const std::exception& e) {
+                            disconnect(event.fd);
+                            PLOGW << "Connection with fd " << event.fd << " writing error";
+                            continue;
+                        }
                     }
 
 

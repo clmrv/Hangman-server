@@ -28,15 +28,19 @@ void Connection::read() {
             nextIn = Message::In();
         }
     } catch (const std::exception& e) {
-        throw e;
+        throw;
     }
 }
 
 void Connection::write() {
     if(!outgoing.empty()) {
-        if(outgoing.front().write(fd)) {
-            PLOGD << "Connection FD: " << fd << " completed sending a message";
-            outgoing.pop_front();
+        try {
+            if(outgoing.front().write(fd)) {
+                PLOGD << "Connection FD: " << fd << " completed sending a message";
+                outgoing.pop_front();
+            }
+        } catch (const std::exception& e) {
+            throw;
         }
     }
 }

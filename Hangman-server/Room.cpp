@@ -7,7 +7,7 @@
 
 #include "Room.hpp"
 
-Room::Room(std::string id, Player* host, RoomSettings& settings):
+Room::Room(const std::string& id, Player* host, RoomSettings& settings):
     id(id),
     players({ host }),
     settings(settings),

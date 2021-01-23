@@ -54,8 +54,6 @@ private:
 
 public:
 
-    bool error = false;
-
     /// Create a message from bytes
     Out(MessageType type, const uint8_t* bytes, size_t count);
 
@@ -68,9 +66,6 @@ public:
 
     /// Check whether writing has been completed
     bool completed();
-
-    /// Reset writing progress
-    void reset();
 
 };
 

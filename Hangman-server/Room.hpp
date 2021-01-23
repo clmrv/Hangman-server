@@ -47,7 +47,7 @@ public:
     /// @param id ID of the room
     /// @param host Player creating the room
     /// @param settings Settings of the room
-    Room(std::string id, Player* host, RoomSettings& settings);
+    Room(const std::string& id, Player* host, RoomSettings& settings);
 
 
     /// Whether the player can join the room

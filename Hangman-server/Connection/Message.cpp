@@ -41,7 +41,7 @@ bool In::read(int fd) {
         // Error reading
         else {
             PLOGE << "Error reading message from FD: " << fd;
-            throw new std::exception();
+            throw std::exception();
             return true;
         }
     }
@@ -58,7 +58,7 @@ bool In::read(int fd) {
         // Error reading
         else {
             PLOGE << "Error reading message from FD: " << fd;
-            throw new std::exception();
+            throw std::exception();
             return true;
         }
     }
@@ -97,20 +97,9 @@ bool Out::write(int fd) {
         written += static_cast<size_t>(n);
     } else {
         PLOGE << "Error writing message to FD: " << fd;
-        error = true;
+        throw std::exception();
         return true;
     }
 
     return written == bytes.size();
-}
-
-/// Check whether writing has been completed
-bool Out::completed() {
-    return error || bytes.size() == written;
-}
-
-/// Reset writing progress and error
-void Out::reset() {
-    written = 0;
-    error = false;
 }

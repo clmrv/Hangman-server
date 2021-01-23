@@ -33,9 +33,22 @@ struct PlayerInGame {
     bool operator>(const PlayerInGame& other) const;
 };
 
+// Constants used for calculating points
+namespace GamePoints {
+
+constexpr uint16_t wordConstant = 1000;
+constexpr double wordTime = 2000;
+constexpr double wordLetters = 100;
+constexpr double wordHealth = 1000;
+
+constexpr uint16_t letter = 20;
+constexpr uint16_t letterBonus = 10;
+
+}
+
 class Game {
 public:
-    Game(std::string id, RoomSettings& settings, std::set<Player*>& players);
+    Game(const std::string& id, RoomSettings& settings, std::set<Player*>& players);
 
     /// 6-digit ID of the game
     std::string id;
@@ -95,7 +108,7 @@ private:
     /// Generate a random word
     /// @param language Word language
     /// @param length The length of the word
-    static std::string randomWord(std::string language, uint8_t length);
+    static std::string randomWord(const std::string& language, uint8_t length);
 
     /// Random number generator
     static std::mt19937_64 rng;

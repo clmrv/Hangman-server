@@ -29,7 +29,7 @@ public:
     uint16_t id;
 
     // Connection used by this Player
-    Connection* conn;
+    Connection* conn = nullptr;
 
     /// Send a message to client (if there is a connection)
     void send(Message::Out message);

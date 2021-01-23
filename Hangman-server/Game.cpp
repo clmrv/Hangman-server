@@ -20,7 +20,7 @@ bool PlayerInGame::operator>(const PlayerInGame& other) const {
 // Init random number generator
 std::mt19937_64 Game::rng = std::mt19937_64 { (uint64_t)std::chrono::high_resolution_clock::now().time_since_epoch().count() };
 
-Game::Game(std::string id, RoomSettings& settings, std::set<Player*>& players): id(id) {
+Game::Game(const std::string& id, RoomSettings& settings, std::set<Player*>& players): id(id) {
 
     // Get UTF-8 word
     std::string utf8word = Game::randomWord(settings.language, settings.wordLength);
@@ -69,29 +69,38 @@ void Game::teardownPlayers() {
     }
 }
 
-std::string Game::randomWord(std::string language, uint8_t length) {
+std::string Game::randomWord(const std::string& language, uint8_t length) {
     // LENGTH: 3-13
-    std::ifstream file("./words/" + language + "/" + std::to_string(length));
-
+    std::ifstream file;
     std::string word;
+    uint64_t words;
 
-    // Load the number of words from the first line of the file
-    std::getline(file, word);
-    uint64_t words = std::stoll(word);
+    try {
+        file.open("./words/" + language + "/" + std::to_string(length));
+
+        // Load the number of words from the first line of the file
+        std::getline(file, word);
+        words = std::stoll(word);
+
+    } catch (const std::exception& e) {
+        PLOGE << "Error opening file for language '" << language << "' with the length of " << static_cast<uint16_t>(length);
+        file.close();
+        return std::string(length, 'x');
+    }
 
     // Random word number
     uint64_t rand = std::uniform_int_distribution<uint64_t>(0, words - 1)(Game::rng);
 
     for(uint64_t i = 0; i < rand; i++) {
         if(!std::getline(file, word)) {
-            PLOGE << "Error loading file for language '" << language << "' with the length of " << length;
+            PLOGE << "Error loading file for language '" << language << "' with the length of " << static_cast<uint16_t>(length);
             file.close();
-            return std::string("X", length);
+            return std::string(length, 'x');
         }
     }
     file.close();
 
-    PLOGV << "Random word in language '" << language << "' with the length of " << length << " is: " << word;
+    PLOGV << "Random word in language '" << language << "' with the length of " << static_cast<uint16_t>(length) << " is: " << word;
     return word;
 }
 
@@ -215,11 +224,12 @@ bool Game::guessWord(Player *player, std::u32string &word) {
             PLOGD << "Player #" << player->id << ": points: " << p.points << ", time%: " << timePercentage
                   << ", missing letters: " << missingLetters << ", letters%: " << lettersPercentage;
 
-            p.points += 1000;
-            p.points += timePercentage * 2000;
-            p.points += missingLetters * 30;        // 20 pts when guessing each letter separately
-            p.points += lettersPercentage * 100;
-            p.points += ((double)p.health / (double)maxHealth) * 1000.0;    // Percent of remaining health * 1000
+            p.points += GamePoints::wordConstant;
+            p.points += timePercentage * GamePoints::wordTime;
+            p.points += missingLetters * (GamePoints::letter + GamePoints::letterBonus);
+            p.points += lettersPercentage * GamePoints::wordLetters;
+            // Percent of remaining health * 1000
+            p.points += ((double)p.health / (double)maxHealth) * GamePoints::wordHealth;
             PLOGD << "Player #" << player->id << ": points: " << p.points;
         }
 
@@ -269,7 +279,7 @@ bool Game::guessLetter(Player *player, char32_t &letter) {
                 for(unsigned int i = 0; i < word.size(); i++) {
                     if(word[i] == letter) {
                         p.word[i] = letter;
-                        p.points += 20;         // 20 pts for each letter occurence
+                        p.points += GamePoints::letter;
                         count += 1;
                     }
                 }
@@ -290,11 +300,15 @@ bool Game::guessLetter(Player *player, char32_t &letter) {
                     // 0.0 - none letters were missing
                     double lettersPercentage = (double)count / (double)p.word.size();
 
-                    p.points += 1000;
-                    p.points += timePercentage * 2000;
-                    p.points += count * 10;                 // 20 pts when guessing each letter separately
-                    p.points += lettersPercentage * 100;
-                    p.points += ((double)p.health / (double)maxHealth) * 1000.0;    // Percent of remaining health * 1000
+                    PLOGD << "Player #" << player->id << ": points: " << p.points << ", time%: " << timePercentage
+                          << ", letters%: " << lettersPercentage;
+
+                    p.points += GamePoints::wordConstant;
+                    p.points += timePercentage * GamePoints::wordTime;
+                    p.points += count * GamePoints::letterBonus;
+                    p.points += lettersPercentage * GamePoints::wordLetters;
+                    // Percent of remaining health * 1000
+                    p.points += ((double)p.health / (double)maxHealth) * GamePoints::wordHealth;
 
                 }
             }
