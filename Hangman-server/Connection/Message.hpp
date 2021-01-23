@@ -36,15 +36,12 @@ public:
     uint16_t length = 0;
     std::vector<uint8_t> data;
 
-    bool error = false;
 
     /// Read message from a file descriptor
     /// @param fd File descriptor to read data from
     /// @return Whether the whole message was read
     bool read(int fd);
 
-    /// Indicate whether the whole message was read
-    bool completed();
 };
 
 

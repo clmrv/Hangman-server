@@ -41,7 +41,7 @@ bool In::read(int fd) {
         // Error reading
         else {
             PLOGE << "Error reading message from FD: " << fd;
-            error = true;
+            throw new std::exception();
             return true;
         }
     }
@@ -58,17 +58,14 @@ bool In::read(int fd) {
         // Error reading
         else {
             PLOGE << "Error reading message from FD: " << fd;
-            error = true;
+            throw new std::exception();
             return true;
         }
     }
 
-    return error || (bufRead >= 3 && bufRead == length + 3u );
+    return (bufRead >= 3 && bufRead == length + 3u );
 }
 
-bool In::completed() {
-    return error || (bufRead >= 3 && bufRead == length + 3u );
-}
 
 
 // MARK: - OutMessage

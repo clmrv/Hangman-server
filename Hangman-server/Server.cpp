@@ -59,7 +59,11 @@ void Server::eventLoop() {
 
                     // Read from connection
                     if(event.revents & POLLIN) {
-                        connections[event.fd].read();
+                        try {
+                            connections[event.fd].read();
+                        } catch (const std::exception& e) {
+                            disconnect(event.fd);
+                        }
                     }
 
                     // Write to connection
@@ -103,6 +107,7 @@ void Server::handleMessages() {
                 {
                     Message::login msg(*raw);
                     login(conn, msg.id);
+                    conn.incoming.erase(raw);
                     break;
                 }
                 // Set name
@@ -114,6 +119,7 @@ void Server::handleMessages() {
                     } else {
                         PLOGW << "No player, but received 'setName' message";
                     }
+                    conn.incoming.erase(raw);
                     break;
                 }
                 // Join a room
@@ -125,6 +131,7 @@ void Server::handleMessages() {
                     } else {
                         PLOGW << "No player, but received 'joinRoom' message";
                     }
+                    conn.incoming.erase(raw);
                     break;
                 }
                 // Create a room
@@ -136,6 +143,7 @@ void Server::handleMessages() {
                     } else {
                         PLOGW << "No player, but received 'createRoom' message";
                     }
+                    conn.incoming.erase(raw);
                     break;
                 }
                 // Set a new host
@@ -147,6 +155,7 @@ void Server::handleMessages() {
                     } else {
                         PLOGW << "No player, but received 'setNewHost' message";
                     }
+                    conn.incoming.erase(raw);
                     break;
                 }
                 // Kick a player
@@ -158,6 +167,7 @@ void Server::handleMessages() {
                     } else {
                         PLOGW << "No player or player not in room, but received 'kickPlayer' message";
                     }
+                    conn.incoming.erase(raw);
                     break;
                 }
                 // Leave a room
@@ -172,6 +182,7 @@ void Server::handleMessages() {
                     } else {
                         PLOGW << "No player or player not in room, but received 'leaveRoom' message";
                     }
+                    conn.incoming.erase(raw);
                     break;
                 }
                 // Start the game
@@ -182,6 +193,7 @@ void Server::handleMessages() {
                     } else {
                         PLOGW << "No player or player not in room, but received 'startGame' message";
                     }
+                    conn.incoming.erase(raw);
                     break;
                 }
                 // Guess a word
@@ -198,6 +210,7 @@ void Server::handleMessages() {
                     } else {
                         PLOGW << "No player or player not in game, but received 'guessWord' message";
                     }
+                    conn.incoming.erase(raw);
                     break;
                 }
                 // Guess a letter
@@ -214,13 +227,14 @@ void Server::handleMessages() {
                     } else {
                         PLOGW << "No player or player not in room, but received 'guessLetter' message";
                     }
+                    conn.incoming.erase(raw);
                     break;
                 }
                 default:
+                    disconnect(fd);
                     PLOGW << "Message of unknown type: " << std::hex << (int)static_cast<uint8_t>(raw->type);
                     break;
             }
-            conn.incoming.erase(raw);
         }
     }
 }

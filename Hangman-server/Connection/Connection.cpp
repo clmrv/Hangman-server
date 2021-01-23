@@ -20,14 +20,16 @@ Connection::Connection(int fd) {
 }
 
 void Connection::read() {
-
-    if(nextIn.read(fd)) {
-        PLOGD << "Connection FD: " << fd << " received complete message of type 0x"
-              << std::hex << (int)static_cast<uint8_t>(nextIn.type) << " and length " << std::dec << nextIn.length;
-        incoming.push_back(std::move(nextIn));
-        nextIn = Message::In();
+    try {
+        if(nextIn.read(fd)) {
+            PLOGD << "Connection FD: " << fd << " received complete message of type 0x"
+                  << std::hex << (int)static_cast<uint8_t>(nextIn.type) << " and length " << std::dec << nextIn.length;
+            incoming.push_back(std::move(nextIn));
+            nextIn = Message::In();
+        }
+    } catch (const std::exception& e) {
+        throw e;
     }
-
 }
 
 void Connection::write() {

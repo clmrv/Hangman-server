@@ -23,6 +23,7 @@ int main(int argc, const char * argv[]) {
 
     // Initialize a server
     Server server;
+    server.start();
 
     return 0;
 }
