@@ -35,7 +35,10 @@ struct PlayerInGame {
 
 class Game {
 public:
-    Game(RoomSettings& settings, std::set<Player*>& players);
+    Game(std::string id, RoomSettings& settings, std::set<Player*>& players);
+
+    /// 6-digit ID of the game
+    std::string id;
 
     /// Assign a pointer to the game to each player
     void setupPlayers();
@@ -57,9 +60,6 @@ public:
     /// @param player Player guessing the letter
     /// @param letter The guessed letter
     bool guessLetter(Player* player, char32_t& letter);
-
-    // Comparison operator
-    bool operator==(const Game& other);
     
 private:
     /// Players

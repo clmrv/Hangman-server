@@ -20,7 +20,7 @@ bool PlayerInGame::operator>(const PlayerInGame& other) const {
 // Init random number generator
 std::mt19937_64 Game::rng = std::mt19937_64 { (uint64_t)std::chrono::high_resolution_clock::now().time_since_epoch().count() };
 
-Game::Game(RoomSettings& settings, std::set<Player*>& players) {
+Game::Game(std::string id, RoomSettings& settings, std::set<Player*>& players): id(id) {
 
     // Get UTF-8 word
     std::string utf8word = Game::randomWord(settings.language, settings.wordLength);
@@ -52,19 +52,6 @@ Game::Game(RoomSettings& settings, std::set<Player*>& players) {
         }));
         PLOGV << "\t#" << player->id << " - " << player->getName();
     }
-}
-
-bool Game::operator==(const Game &other) {
-    bool basic = word == other.word && startTime == other.startTime && endTime == other.endTime && players.size() == other.players.size();
-    if(!basic) {
-        return false;
-    }
-    for(const auto& [player, inGame] : players) {
-        if(other.players.find(player) == other.players.end()) {
-            return false;
-        }
-    }
-    return true;
 }
 
 void Game::setupPlayers() {
@@ -311,8 +298,8 @@ bool Game::guessLetter(Player *player, char32_t &letter) {
 
             // Player made a wrong guess
             else {
-                // TODO: Log
                 p.health -= 1;
+                PLOGI << "Player #" << player->id << " failed to guess the letter '" << letter << "'";
             }
 
         }
@@ -320,7 +307,7 @@ bool Game::guessLetter(Player *player, char32_t &letter) {
         // Player already has this letter
         else {
             p.health -= 1;
-            PLOGI << "Player #" << player->id << " failed to guessed the letter '" << letter << "'";
+            PLOGI << "Player #" << player->id << " already had the letter '" << letter << "'";
         }
     }
 
