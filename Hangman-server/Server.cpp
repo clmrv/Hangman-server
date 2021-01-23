@@ -9,6 +9,10 @@
 #include "Connection/Message.hpp"
 
 Server::Server(): config("config") {
+    PLOGI << "Served initialized";
+}
+
+void Server::start() {
     newConnectionSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (newConnectionSocket == -1) {
         PLOGE << "Socket failed";
@@ -27,7 +31,7 @@ Server::Server(): config("config") {
     }
 
     listen(newConnectionSocket, 5);     // second arg - how many can wait to be accepted (in queue)
-    PLOGD << "Listening on port " << config.port;
+    PLOGD << "Server listening on port " << config.port;
     this->eventLoop();
 }
 
@@ -189,7 +193,7 @@ void Server::handleMessages() {
                         if(game.guessWord(conn.player, msg.word)) {
                             // Game finished - can delete
                             PLOGD << "Game finished - deleting";
-                            games.erase(std::remove_if(games.begin(), games.end(), [&game] (const Game& g) { return game == g; }));
+                            games.erase(game.id);
                         }
                     } else {
                         PLOGW << "No player or player not in game, but received 'guessWord' message";
@@ -205,7 +209,7 @@ void Server::handleMessages() {
                         if(game.guessLetter(conn.player, msg.letter)) {
                             // Game finished - can delete
                             PLOGD << "Game finished - deleting";
-                            games.erase(std::remove_if(games.begin(), games.end(), [&game] (const Game& g) { return game == g; }));
+                            games.erase(game.id);
                         }
                     } else {
                         PLOGW << "No player or player not in room, but received 'guessLetter' message";
@@ -224,7 +228,7 @@ void Server::handleMessages() {
 void Server::handleGames() {
     // Loop every game
     for(auto it = games.begin(); it != games.end(); ) {
-        if(it->loop()) {
+        if(it->second.loop()) {
             // Delete game when finished
             PLOGD << "Game finished - deleting";
             it = games.erase(it);
@@ -239,6 +243,13 @@ void Server::connect() {
     socklen_t socketSize;
     
     int fd = accept(newConnectionSocket, (sockaddr*)&socket, &socketSize);
+
+    // Set file descriptor to non-blocking
+    if (fcntl(fd, F_SETFL, O_NONBLOCK, 1) == -1) {
+        close(fd);
+        PLOGE << "Error setting file descriptor " << fd << " to non-blocking";
+        return;
+    }
 
     // Create new Connection
     connections.emplace(fd, fd);
@@ -286,6 +297,9 @@ void Server::disconnect(int fd) {
 
     // Remove event
     events.erase(std::remove_if(events.begin(), events.end(), [fd] (const pollfd& p) { return p.fd == fd; } ), events.end());
+
+    // Close fd
+    close(fd);
 
     PLOGV << "Deleted player FD: " << fd;
 }
@@ -367,10 +381,10 @@ void Server::createRoom(Player* player, RoomSettings& settings) {
     // Create unique id
     do {
         id = {dist(generator), dist(generator), dist(generator), dist(generator), dist(generator), dist(generator)};
-    } while (rooms.find(id) != rooms.end());
+    } while (rooms.find(id) != rooms.end() || games.find(id) != games.end());
 
     // Create the new room and assign a pointer to it to the player
-    auto [newRoom, _] = rooms.emplace(std::make_pair(id, Room(id, player, settings)));
+    auto [newRoom, _] = rooms.emplace(id, Room(id, player, settings));
     player->room = &newRoom->second;
 
     PLOGI << "Player #" << player->id << " created room " << id;
@@ -378,8 +392,8 @@ void Server::createRoom(Player* player, RoomSettings& settings) {
 
 // Start a game
 void Server::startGame(Room& room) {
-    auto game = games.insert(games.end(), room.start());
-    game->setupPlayers();
+    auto [newGame, _] = games.emplace(room.id, room.start());
+    newGame->second.setupPlayers();
     PLOGI << "Game from room " << room.id << " started.";
     rooms.erase(room.id);
 }

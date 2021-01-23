@@ -7,11 +7,12 @@
 
 #include "Room.hpp"
 
-Room::Room(std::string id, Player* host, RoomSettings& settings) {
-    this->id = id;
-    this->settings = settings;
-    this->players.insert(host);
-    this->host = host;
+Room::Room(std::string id, Player* host, RoomSettings& settings):
+    id(id),
+    players({ host }),
+    settings(settings),
+    host(host)
+{
 
     PLOGI << "Creating a room with id " << id << ", host: #" << host->id << " - " << host->getName();
     IF_PLOG(plog::verbose) {
@@ -94,7 +95,7 @@ Game Room::start() {
         player->room = nullptr;
     }
     PLOGI << "Room " << id << " starting game";
-    return Game(settings, players);
+    return Game(id, settings, players);
 }
 
 void Room::updateAll() {

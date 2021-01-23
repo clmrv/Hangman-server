@@ -10,14 +10,14 @@
 using namespace Message;
 
 void push_back_uint64(std::vector<uint8_t>& vec, uint64_t value) {
-    vec.push_back(uint8_t((value >> 56) & 0xFFull));
-    vec.push_back(uint8_t((value >> 48) & 0xFFull));
-    vec.push_back(uint8_t((value >> 40) & 0xFFull));
-    vec.push_back(uint8_t((value >> 32) & 0xFFull));
-    vec.push_back(uint8_t((value >> 24) & 0xFFull));
-    vec.push_back(uint8_t((value >> 16) & 0xFFull));
-    vec.push_back(uint8_t((value >> 8) & 0xFFull));
-    vec.push_back(uint8_t(value & 0xFFull));
+    vec.push_back(uint8_t(value >> 56));
+    vec.push_back(uint8_t(value >> 48));
+    vec.push_back(uint8_t(value >> 40));
+    vec.push_back(uint8_t(value >> 32));
+    vec.push_back(uint8_t(value >> 24));
+    vec.push_back(uint8_t(value >> 16));
+    vec.push_back(uint8_t(value >> 8));
+    vec.push_back(uint8_t(value));
 }
 
 void push_back_uint32(std::vector<uint8_t>& vec, uint32_t value) {

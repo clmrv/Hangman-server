@@ -24,24 +24,24 @@
 #include <optional>
 #include <algorithm>
 #include <random>
-#include <deque>
 
 class Server {
 public:
     
     Server();
 
-    /// Creates a room
-    /// @param host Player that will be the host
-    /// @return Index of the room
-    int createRoom(Player* host);
+    /// Start the server
+    void start();
+
+    /// Stop the server
+    void stop();
     
     ~Server();
     
 private:
     std::unordered_map<uint16_t, Player> players;
     std::unordered_map<std::string, Room> rooms;
-    std::deque<Game> games;
+    std::unordered_map<std::string, Game> games;
 
     Config config;
     std::unordered_map<int, Connection> connections;

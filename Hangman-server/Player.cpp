@@ -7,12 +7,9 @@
 
 #include "Player.hpp"
 
-Player::Player(uint16_t id) {
-    this->id = id;
+Player::Player(uint16_t id): id(id), room(nullptr), game(nullptr) {
     // Temporary player name
     this->name = "Player" + std::to_string(id);
-    this->room = nullptr;
-    this->game = nullptr;
     PLOGI << "Creating player #" << id << " - " << this->name;
 }
 
