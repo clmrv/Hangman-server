@@ -40,7 +40,7 @@ void Server::eventLoop() {
 
     while (true) {
 
-        if(poll(events.data(), (unsigned int)events.size(), 10) > 0) {
+        if(poll(events.data(), (unsigned int)events.size(), nextGameLoopTime()) > 0) {
             for(auto const &event : events) {
 
                 if(event.fd == newConnectionSocket) {
@@ -231,8 +231,8 @@ void Server::handleMessages() {
                     break;
                 }
                 default:
-                    disconnect(fd);
                     PLOGW << "Message of unknown type: " << std::hex << (int)static_cast<uint8_t>(raw->type);
+                    disconnect(fd);
                     break;
             }
         }
@@ -410,6 +410,21 @@ void Server::startGame(Room& room) {
     newGame->second.setupPlayers();
     PLOGI << "Game from room " << room.id << " started.";
     rooms.erase(room.id);
+}
+
+int Server::nextGameLoopTime() {
+    if(!games.empty()) {
+        auto minEnd = games.begin()->second.getEndTime();
+        for(const auto& g : games) {
+            if(g.second.getEndTime() < minEnd) {
+                minEnd = g.second.getEndTime();
+            }
+        }
+        auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(minEnd - std::chrono::system_clock::now()).count();
+        return ms < 0 ? 10 : (int)ms;
+    } else {
+        return -1;
+    }
 }
 
 

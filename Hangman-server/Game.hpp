@@ -60,6 +60,9 @@ public:
     /// @param player Player guessing the letter
     /// @param letter The guessed letter
     bool guessLetter(Player* player, char32_t& letter);
+
+    /// Get game end time
+    std::chrono::time_point<std::chrono::system_clock> getEndTime() const;
     
 private:
     /// Players

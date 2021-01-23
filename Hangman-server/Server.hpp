@@ -24,6 +24,7 @@
 #include <optional>
 #include <algorithm>
 #include <random>
+#include <chrono>
 
 class Server {
 public:
@@ -89,6 +90,9 @@ private:
     /// Start the game
     /// @param room Room for the game
     void startGame(Room& room);
+
+    /// Calculate time when next game finished (or -1 when there are no games)
+    int nextGameLoopTime();
 };
 
 #endif /* Server_hpp */

@@ -179,6 +179,9 @@ void Game::playerReturned(Player* player) {
 
 }
 
+std::chrono::time_point<std::chrono::system_clock> Game::getEndTime() const {
+    return endTime;
+}
 
 bool Game::guessWord(Player *player, std::u32string &word) {
     PlayerInGame& p = players[player];
