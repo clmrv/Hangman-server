@@ -48,6 +48,11 @@ void Server::eventLoop() {
 
                 } else {
 
+                    // Disconnect
+                    if(event.revents & POLLHUP) {
+                        disconnect(event.fd);
+                    }
+
                     // Read from connection
                     if(event.revents & POLLIN) {
                         connections[event.fd].read();
@@ -58,10 +63,6 @@ void Server::eventLoop() {
                         connections[event.fd].write();
                     }
 
-                    // Disconnect
-                    if(event.revents & POLLHUP) {
-                        disconnect(event.fd);
-                    }
 
                 }
             }

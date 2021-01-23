@@ -166,7 +166,7 @@ bool Game::loop() {
     // True when all the players guessed or run out of health
     bool finished = std::find_if(players.begin(),
                                  players.end(),
-                                 [] (const std::pair<Player*, PlayerInGame>& p) {
+                                 [] (const auto& p) {
                                      return !p.second.guessed || p.second.health > 0;
                                  }) == players.end();
 
@@ -244,7 +244,7 @@ bool Game::guessWord(Player *player, std::u32string &word) {
     // True when all the players guessed or run out of health
     bool finished = std::find_if(players.begin(),
                                  players.end(),
-                                 [] (const std::pair<Player*, PlayerInGame>& p) {
+                                 [] (const auto& p) {
                                      return !p.second.guessed && p.second.health > 0;
                                  }) == players.end();
 
@@ -311,6 +311,7 @@ bool Game::guessLetter(Player *player, char32_t &letter) {
 
             // Player made a wrong guess
             else {
+                // TODO: Log
                 p.health -= 1;
             }
 
@@ -327,7 +328,7 @@ bool Game::guessLetter(Player *player, char32_t &letter) {
     // True when all the players guessed or run out of health
     bool finished = std::find_if(players.begin(),
                                  players.end(),
-                                 [] (const std::pair<Player*, PlayerInGame>& p) {
+                                 [] (const auto& p) {
                                      return !p.second.guessed && p.second.health > 0;
                                  }) == players.end();
 

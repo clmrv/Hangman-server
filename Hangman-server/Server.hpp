@@ -24,6 +24,7 @@
 #include <optional>
 #include <algorithm>
 #include <random>
+#include <deque>
 
 class Server {
 public:
@@ -40,7 +41,7 @@ public:
 private:
     std::unordered_map<uint16_t, Player> players;
     std::unordered_map<std::string, Room> rooms;
-    std::vector<Game> games;
+    std::deque<Game> games;
 
     Config config;
     std::unordered_map<int, Connection> connections;
