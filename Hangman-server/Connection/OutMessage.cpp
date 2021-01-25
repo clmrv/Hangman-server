@@ -21,15 +21,15 @@ void push_back_uint64(std::vector<uint8_t>& vec, uint64_t value) {
 }
 
 void push_back_uint32(std::vector<uint8_t>& vec, uint32_t value) {
-    vec.push_back(uint8_t((value >> 24) & 0xFFul));
-    vec.push_back(uint8_t((value >> 16) & 0xFFul));
-    vec.push_back(uint8_t((value >> 8) & 0xFFul));
-    vec.push_back(uint8_t(value & 0xFFul));
+    vec.push_back(uint8_t(value >> 24));
+    vec.push_back(uint8_t(value >> 16));
+    vec.push_back(uint8_t(value >> 8));
+    vec.push_back(uint8_t(value));
 }
 
 void push_back_uint16(std::vector<uint8_t>& vec, uint16_t value) {
     vec.push_back(uint8_t(value >> 8));
-    vec.push_back(uint8_t(value & 0x00ff));
+    vec.push_back(uint8_t(value));
 }
 
 

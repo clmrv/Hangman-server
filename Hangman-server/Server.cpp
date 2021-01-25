@@ -101,9 +101,9 @@ void Server::eventLoop() {
         for(auto& event : events) {
             if(event.fd != newConnectionSocket) {
                 if(!connections[event.fd].outgoing.empty()) {
-                    event.events = POLLIN | POLLOUT | POLLHUP;
+                    event.events = POLLIN | POLLOUT | POLLHUP | POLLERR;
                 } else {
-                    event.events = POLLIN | POLLHUP;
+                    event.events = POLLIN | POLLHUP | POLLERR;
                 }
             }
         }
@@ -286,7 +286,7 @@ void Server::connect() {
     connections.emplace(fd, fd);
 
     // Create new event
-    events.push_back({ fd, POLLIN | POLLHUP });
+    events.push_back({ fd, POLLIN | POLLHUP | POLLERR });
 
     PLOGI << "Connected IP: " << inet_ntoa(socket.sin_addr) << ", FD: " << fd << ", connections: " << connections.size();
 }
