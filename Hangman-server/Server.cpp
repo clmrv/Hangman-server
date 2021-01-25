@@ -52,17 +52,17 @@ void Server::eventLoop() {
 
                 } else {
 
-                    // Disconnect
-                    if(event.revents & POLLHUP) {
-                        disconnect(event.fd);
-                        PLOGI << "Connection with fd " << event.fd << " disconnected";
-                        continue;
-                    }
-
                     // Error
                     if(event.revents & POLLERR) {
                         disconnect(event.fd);
                         PLOGW << "Connection with fd " << event.fd << " error";
+                        continue;
+                    }
+
+                    // Disconnect
+                    if(event.revents & POLLHUP) {
+                        disconnect(event.fd);
+                        PLOGI << "Connection with fd " << event.fd << " disconnected";
                         continue;
                     }
 
@@ -101,9 +101,9 @@ void Server::eventLoop() {
         for(auto& event : events) {
             if(event.fd != newConnectionSocket) {
                 if(!connections[event.fd].outgoing.empty()) {
-                    event.events = POLLIN | POLLOUT | POLLHUP | POLLERR;
+                    event.events = POLLIN | POLLOUT;
                 } else {
-                    event.events = POLLIN | POLLHUP | POLLERR;
+                    event.events = POLLIN;
                 }
             }
         }
@@ -286,7 +286,7 @@ void Server::connect() {
     connections.emplace(fd, fd);
 
     // Create new event
-    events.push_back({ fd, POLLIN | POLLHUP | POLLERR });
+    events.push_back({ fd, POLLIN });
 
     PLOGI << "Connected IP: " << inet_ntoa(socket.sin_addr) << ", FD: " << fd << ", connections: " << connections.size();
 }
@@ -438,7 +438,7 @@ int Server::nextGameLoopTime() {
             }
         }
         auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(minEnd - std::chrono::system_clock::now()).count();
-        return ms < 0 ? 10 : (int)ms;
+        return ms < 0 ? 0 : (int)ms;
     } else {
         return -1;
     }
